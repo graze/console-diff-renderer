@@ -1,8 +1,8 @@
 <?php
 
-namespace Graze\BufferedConsole\Test\Unit;
+namespace Graze\BufferedConsole\Test\Unit\Diff;
 
-use Graze\BufferedConsole\FirstDiff;
+use Graze\BufferedConsole\Diff\FirstDiff;
 use Graze\BufferedConsole\Test\TestCase;
 
 class FirstDiffTest extends TestCase

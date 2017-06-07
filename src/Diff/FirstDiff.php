@@ -1,6 +1,6 @@
 <?php
 
-namespace Graze\BufferedConsole;
+namespace Graze\BufferedConsole\Diff;
 
 class FirstDiff
 {

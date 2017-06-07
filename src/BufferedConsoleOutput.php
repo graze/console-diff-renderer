@@ -4,6 +4,7 @@ namespace Graze\BufferedConsole;
 
 use Graze\BufferedConsole\Cursor\ANSI;
 use Graze\BufferedConsole\Cursor\CursorInterface;
+use Graze\BufferedConsole\Diff\FirstDiff;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

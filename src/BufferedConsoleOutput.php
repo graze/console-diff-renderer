@@ -4,6 +4,7 @@ namespace Graze\BufferedConsole;
 
 use Graze\BufferedConsole\Cursor\ANSI;
 use Graze\BufferedConsole\Cursor\CursorInterface;
+use Graze\BufferedConsole\Diff\ConsoleDiff;
 use Graze\BufferedConsole\Diff\FirstDiff;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
@@ -35,7 +36,7 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
         CursorInterface $cursor = null
     ) {
         $this->output = $output;
-        $this->diff = new FirstDiff();
+        $this->diff = new ConsoleDiff();
         $this->cursor = $cursor ?: new ANSI();
     }
 
@@ -86,13 +87,6 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
         }
 
         $diff = $this->diff->lines($this->buffer, $messages);
-
-        // replace col number with strip_tags version to represent what is outputted to the user
-        for ($i = 0; $i < count($messages); $i++) {
-            if (isset($diff[$i]) && !is_null($messages[$i]) && $diff[$i]['col'] > 0) {
-                $diff[$i]['col'] = mb_strlen(strip_tags(mb_substr($messages[$i], 0, $diff[$i]['col'])));
-            }
-        }
 
         $buffer = '';
 

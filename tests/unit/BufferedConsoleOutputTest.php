@@ -80,9 +80,24 @@ class BufferedConsoleOutputTest extends TestCase
         $this->console->reWrite(['<info>first</info> thing', '<error>second</error>']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[5C\e[K thing</info>\n", false, 0)
+                     ->with("\e[1A\r\e[5C\e[K<info> thing</info>\n", false, 0)
                      ->once();
         $this->console->reWrite(['<info>first thing</info>', '<error>second</error>']);
+
+        $this->assertTrue(true);
+    }
+
+    public function testUpdateWithStyleReplacement()
+    {
+        $this->output->shouldReceive('write')
+                     ->with(['<info>first</info>', '<error>second</error>'], false, 0)
+                     ->once();
+        $this->console->reWrite(['<info>first</info>', '<error>second</error>']);
+
+        $this->output->shouldReceive('write')
+                     ->with("\e[1A\r\e[K<info>new</info> thing\n\e[K<error>fish</error>", false, 0)
+                     ->once();
+        $this->console->reWrite(['<info>new</info> thing', '<error>fish</error>']);
 
         $this->assertTrue(true);
     }

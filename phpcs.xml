@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<ruleset name="graze/standards">
+    <description>The graze PHP coding standard as defined in graze/standards.</description>
+    <rule ref="vendor/graze/standards/PHP/CodeSniffer/Graze/ruleset.xml" />
+</ruleset>

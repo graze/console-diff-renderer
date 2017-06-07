@@ -1,0 +1,50 @@
+{
+    "name": "graze/buffered-console",
+    "description": "run a pool of processes simultaneously",
+    "keywords": [
+        "graze",
+        "buffered-console"
+    ],
+    "homepage": "https://github.com/graze/buffered-console",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Harry Bragg",
+            "email": "harry.bragg@graze.com",
+            "role": "Developer"
+        },
+        {
+            "name": "Graze Developers",
+            "email": "developers@graze.com",
+            "homepage": "http://www.graze.com",
+            "role": "Development Team"
+        }
+    ],
+    "require": {
+        "php": "^5.5 | ^7.0",
+        "symfony/process": "^3.2"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "^5.0 | ^6.0",
+        "squizlabs/php_codesniffer": "^2.5",
+        "graze/standards": "^1.0",
+        "symfony/console": "^3.2",
+        "mockery/mockery": "^0.9.9"
+    },
+    "suggests": {
+        "symfony/console": "^3.2"
+
+    },
+    "autoload": {
+        "psr-4": {
+            "Graze\\BufferedConsole\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Graze\\BufferedConsole\\Test\\": "tests/src",
+            "Graze\\BufferedConsole\\Test\\Unit\\": "tests/unit",
+            "Graze\\BufferedConsole\\Test\\Integration\\": "tests/integration"
+        }
+    }
+}

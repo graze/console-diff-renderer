@@ -17,13 +17,13 @@ Update a multi-line console output, but only write what has changed
 $output = new BufferedConsoleOutput($existing);
 
 $output->reWrite([
-'first line',
-'second line',
+    'first line',
+    'second line',
 ]);
 
 $output->reWrite([
-'first line here',
-'second line',
+    'first line here',
+    'second line',
 ]);
 ```
 

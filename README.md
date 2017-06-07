@@ -14,14 +14,14 @@ Update a multi-line console output, but only write what has changed
 ## Usage
 
 ```php
-$output = new ConsoleOutput();
+$output = new BufferedConsoleOutput($existing);
 
-$output->update([
+$output->reWrite([
 'first line',
 'second line',
 ]);
 
-$output->update([
+$output->reWrite([
 'first line here',
 'second line',
 ]);

@@ -6,7 +6,6 @@ $composer->setUseIncludePath(true);
 use Graze\BufferedConsole\BufferedConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-
 $output = new ConsoleOutput();
 $buffer = new BufferedConsoleOutput($output);
 

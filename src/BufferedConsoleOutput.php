@@ -97,7 +97,8 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
 
         // reset cursor position
         $count = count($this->buffer);
-        $up = ($count > 0 ? $count - ($newline ? 0 : 1) : 0);
+        $mod = ($newline ? 0 : 1);
+        $up = ($count > 0 ? $count - $mod : 0);
         if ($up > 0) {
             $buffer .= $this->cursor->moveUp($up);
         }

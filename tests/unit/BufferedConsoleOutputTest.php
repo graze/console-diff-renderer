@@ -11,6 +11,7 @@ class BufferedConsoleOutputTest extends TestCase
 {
     /** @var BufferedConsoleOutput */
     private $console;
+    /** @var mixed */
     private $output;
 
     public function setUp()

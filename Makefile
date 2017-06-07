@@ -40,7 +40,6 @@ test-example: ## Run the example app
 	${DOCKER_RUN} php tests/example/app.php
 
 test-matrix: ## Run the unit tests against multiple targets.
-	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:5.5-alpine" test
 	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:5.6-alpine" test
 	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:7.0-alpine" test
 	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:7.1-alpine" test

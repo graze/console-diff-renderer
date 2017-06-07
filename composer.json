@@ -1,6 +1,6 @@
 {
     "name": "graze/buffered-console",
-    "description": "run a pool of processes simultaneously",
+    "description": "only write output to a console that has changed",
     "keywords": [
         "graze",
         "buffered-console"

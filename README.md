@@ -9,15 +9,7 @@
 
 Update a multi-line console output, but only write what has changed
 
-<script type="text/javascript" src="http://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb.js" id="asciicast-bokpbfbg8d4yolihmfimtoaqb" async></script>
-
-## Install
-
-Via Composer
-
-``` bash
-$ composer require graze/buffered-console
-```
+[![asciicast](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb.png)](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb)
 
 ## Usage
 
@@ -35,9 +27,15 @@ $output->update([
 ]);
 ```
 
-This will navigate the cursor to the end of `first line` and write ` here` then navigate back to the end
+This will navigate the cursor to the end of `first line` and write ` here` then navigate the cursor back to the end.
 
-Will only write `here` on the first line, everything else will be left the same
+## Install
+
+Via Composer
+
+``` bash
+$ composer require graze/buffered-console
+```
 
 ## Testing
 

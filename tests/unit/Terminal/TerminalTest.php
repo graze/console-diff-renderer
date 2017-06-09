@@ -35,13 +35,19 @@ class TerminalTest extends TestCase
         $methods = $reflection->getMethods();
 
         foreach ($methods as $method) {
-            $args = array_map(function (ReflectionParameter $param) {
-                return rand(0, 100);
-            }, $method->getParameters());
-            $cursor->shouldReceive($method->getName())
-                   ->withArgs($args)
-                   ->andReturn($method->getName());
-            $this->assertEquals($method->getName(), call_user_func_array([$terminal, $method->getName()], $args));
+            if ($method->getNumberOfParameters() > 0) {
+                $args = array_map(function () {
+                    return rand(0, 100);
+                }, $method->getParameters());
+                $cursor->shouldReceive($method->getName())
+                       ->withArgs($args)
+                       ->andReturn($method->getName());
+                $this->assertEquals($method->getName(), call_user_func_array([$terminal, $method->getName()], $args));
+            } else {
+                $cursor->shouldReceive($method->getName())
+                       ->andReturn($method->getName());
+                $this->assertEquals($method->getName(), call_user_func([$terminal, $method->getName()]));
+            }
         }
     }
 }

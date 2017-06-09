@@ -173,22 +173,22 @@ class BufferedConsoleOutputTest extends TestCase
     public function testNewlyWrappingLines()
     {
         $this->wrapper->shouldReceive('wrap')
-                      ->with(['1234567890','1234567890'])
+                      ->with(['1234567890', '1234567890'])
                       ->once()
-                      ->andReturn(['1234567890','1234567890']);
+                      ->andReturn(['1234567890', '1234567890']);
         $this->output->shouldReceive('write')
-            ->with(['1234567890','1234567890'], false, 0)
-            ->once();
-        $this->console->reWrite(['1234567890','1234567890']);
+                     ->with(['1234567890', '1234567890'], false, 0)
+                     ->once();
+        $this->console->reWrite(['1234567890', '1234567890']);
 
         $this->wrapper->shouldReceive('wrap')
-                      ->with(['123456789012345','123456789012345'])
+                      ->with(['123456789012345', '123456789012345'])
                       ->once()
-                      ->andReturn(['1234567890','12345','1234567890','12345']);
+                      ->andReturn(['1234567890', '12345', '1234567890', '12345']);
         $this->output->shouldReceive('write')
                      ->with("\e[1A\r\n\e[5C\e[K\n\e[K1234567890\n\e[K12345", false, 0)
                      ->once();
-        $this->console->reWrite(['123456789012345','123456789012345']);
+        $this->console->reWrite(['123456789012345', '123456789012345']);
     }
 
     public function testTrimmedLines()
@@ -214,5 +214,47 @@ class BufferedConsoleOutputTest extends TestCase
                      ->with("\r\e[3C\e[Kcake   ", false, 0)
                      ->once();
         $this->console->reWrite(['123cake   12345']);
+    }
+
+    public function testLineTruncationBasedOnTerminalSize()
+    {
+        $symfonyTerminal = Mockery::mock(\Symfony\Component\Console\Terminal::class);
+        $symfonyTerminal->shouldReceive('getWidth')
+                        ->andReturn(80);
+        $symfonyTerminal->shouldReceive('getHeight')
+                        ->andReturn(5);
+        $terminal = new Terminal(null, $symfonyTerminal);
+        $this->console->setTerminal($terminal);
+
+        $this->output->shouldReceive('write')
+                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], false, 0)
+                     ->once();
+        $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth']);
+
+        $this->output->shouldReceive('write')
+                     ->with("\e[4A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth", false, 0)
+                     ->once();
+        $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth']);
+    }
+
+    public function testLineTruncationWithNewLine()
+    {
+        $symfonyTerminal = Mockery::mock(\Symfony\Component\Console\Terminal::class);
+        $symfonyTerminal->shouldReceive('getWidth')
+                        ->andReturn(80);
+        $symfonyTerminal->shouldReceive('getHeight')
+                        ->andReturn(6);
+        $terminal = new Terminal(null, $symfonyTerminal);
+        $this->console->setTerminal($terminal);
+
+        $this->output->shouldReceive('write')
+                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], true, 0)
+                     ->once();
+        $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth'], true);
+
+        $this->output->shouldReceive('write')
+                     ->with("\e[5A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth", true, 0)
+                     ->once();
+        $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth'], true);
     }
 }

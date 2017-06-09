@@ -94,11 +94,12 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
             return;
         }
 
-        $diff = $this->diff->lines($this->buffer, $messages);
-
-        if (count($diff) > $this->terminal->getHeight()) {
-            $diff = array_slice($diff, count($diff) - $this->terminal->getHeight());
+        $sizeDiff = ($newline ? 1 : 0);
+        if (count($messages) + $sizeDiff > $this->terminal->getHeight()) {
+            $messages = array_slice($messages, count($messages) + $sizeDiff - $this->terminal->getHeight());
         }
+
+        $diff = $this->diff->lines($this->buffer, $messages);
 
         $output = $this->buildOutput($diff, $newline);
         $this->buffer = $messages;
@@ -118,8 +119,8 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
 
         // reset cursor position
         $count = count($this->buffer);
-        $mod = ($newline ? 0 : 1);
-        $up = ($count > 0 ? $count - $mod : 0);
+        $mod = ($newline ? 1 : 0);
+        $up = ($count > 0 ? $count - 1 + $mod : $mod);
         if ($up > 0) {
             $buffer .= $this->terminal->moveUp($up);
         }

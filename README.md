@@ -29,6 +29,8 @@ $output->reWrite([
 
 This will navigate the cursor to the end of `first line` and write ` here` then navigate the cursor back to the end.
 
+ - Supports Symfony tags (e.g. `<info>`)
+
 ## Install
 
 Via Composer

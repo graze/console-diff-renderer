@@ -36,6 +36,9 @@ lint-fix: ## Run phpcsf and fix possible lint errors.
 test-unit: ## Run the unit testsuite.
 	${DOCKER_RUN} vendor/bin/phpunit --colors=always --testsuite unit
 
+test-integration: ## Run the integration testsuite
+	docker-compose run --rm test-integration vendor/bin/phpunit --colors=always --testsuite integration
+
 test-example: ## Run the example app
 	${DOCKER_RUN} php tests/example/app.php
 

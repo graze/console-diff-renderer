@@ -9,11 +9,11 @@
  * file that was distributed with this source code.
  *
  * @license https://github.com/graze/buffered-console/blob/master/LICENSE.md
- * @link https://github.com/graze/buffered-console
+ * @link    https://github.com/graze/buffered-console
  */
 
 namespace Graze\BufferedConsole\Test;
 
-class TestCase extends \PHPUnit\Framework\TestCase
+class TestCase extends \PHPUnit_Framework_TestCase
 {
 }

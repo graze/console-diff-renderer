@@ -1,6 +1,6 @@
 <?php
 
-namespace Graze\BufferedConsole\Cursor;
+namespace Graze\BufferedConsole\Terminal;
 
 interface CursorInterface
 {

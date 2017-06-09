@@ -10,8 +10,7 @@ php:
   - nightly
 
 before_script:
-  - travis_retry composer self-update
-  - travis_retry composer update --no-interaction --prefer-source
+  - travis_retry composer update --no-interaction --prefer-dist
 
 script:
   - vendor/bin/phpcs -p --warning-severity=0 src/ tests/

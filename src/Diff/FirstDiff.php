@@ -17,10 +17,12 @@ class FirstDiff
     public function lines(array $old, array $new)
     {
         $out = [];
-        for ($i=0; $i < count($old) || $i < count($new); $i++) {
-            if ($i >= count($old)) {
+        $newLen = count($new);
+        $oldLen = count($old);
+        for ($i = 0; $i < $oldLen || $i < $newLen; $i++) {
+            if ($i >= $oldLen) {
                 $out[] = ['col' => 0, 'str' => $new[$i]]; // write out the entire line for extra lines
-            } elseif ($i >= count($new)) {
+            } elseif ($i >= $newLen) {
                 $out[] = ['col' => 0, 'str' => '']; // clear the line if the new array has less entries than the old one
             } else {
                 $col = $this->firstDifference($old[$i], $new[$i]);

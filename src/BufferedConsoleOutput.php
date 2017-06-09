@@ -2,10 +2,10 @@
 
 namespace Graze\BufferedConsole;
 
-use Graze\BufferedConsole\Cursor\ANSI;
-use Graze\BufferedConsole\Cursor\CursorInterface;
 use Graze\BufferedConsole\Diff\ConsoleDiff;
-use Graze\BufferedConsole\Diff\FirstDiff;
+use Graze\BufferedConsole\Terminal\Terminal;
+use Graze\BufferedConsole\Terminal\TerminalInterface;
+use Graze\BufferedConsole\Wrap\Wrapper;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,44 +18,52 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
 {
     /** @var string[] */
     private $buffer = [];
-    /** @var FirstDiff */
+    /** @var ConsoleDiff */
     private $diff;
-    /** @var CursorInterface */
-    private $cursor;
+    /** @var TerminalInterface */
+    private $terminal;
     /** @var ConsoleOutputInterface */
     private $output;
+    /** @var Wrapper */
+    private $wrapper;
+    /** @var bool */
+    private $trim = false;
 
     /**
      * Constructor.
      *
      * @param ConsoleOutputInterface $output
-     * @param CursorInterface        $cursor
+     * @param TerminalInterface      $terminal
+     * @param Wrapper                $wrapper
      */
     public function __construct(
         ConsoleOutputInterface $output,
-        CursorInterface $cursor = null
+        TerminalInterface $terminal = null,
+        Wrapper $wrapper = null
     ) {
         $this->output = $output;
         $this->diff = new ConsoleDiff();
-        $this->cursor = $cursor ?: new ANSI();
+        $this->terminal = $terminal ?: new Terminal();
+        $this->wrapper = $wrapper ?: new Wrapper($this->terminal->getWidth());
     }
 
     /**
-     * Sets the cursor to use when navigating around the terminal
+     * Sets information about the terminal
      *
-     * @param CursorInterface $cursor
+     * @param TerminalInterface $terminal
      */
-    public function setCursor(CursorInterface $cursor)
+    public function setTerminal(TerminalInterface $terminal)
     {
-        $this->cursor = $cursor;
+        $this->terminal = $terminal;
+        $this->wrapper->setWidth($terminal->getWidth());
     }
 
     /**
-     * @return CursorInterface
+     * @return TerminalInterface
      */
-    public function getCursor()
+    public function getTerminal()
     {
-        return $this->cursor;
+        return $this->terminal;
     }
 
     /**
@@ -71,14 +79,15 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
     }
 
     /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
-     *                               the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
+     * @param string|string[] $messages The message as an array of lines or a single string
+     * @param bool            $newline  Whether to add a newline
+     * @param int             $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
+     *                                  the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
      */
     public function reWrite($messages, $newline = false, $options = 0)
     {
         $messages = (array) $messages;
+        $messages = ($this->trim) ? $this->wrapper->trim($messages) : $this->wrapper->wrap($messages);
 
         if (count($this->buffer) === 0) {
             $this->buffer = $messages;
@@ -86,35 +95,54 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
             return;
         }
 
+        $sizeDiff = ($newline ? 1 : 0);
+        if (count($messages) + $sizeDiff > $this->terminal->getHeight()) {
+            $messages = array_slice($messages, count($messages) + $sizeDiff - $this->terminal->getHeight());
+        }
+
         $diff = $this->diff->lines($this->buffer, $messages);
 
+        $output = $this->buildOutput($diff, $newline);
+        $this->buffer = $messages;
+
+        $this->output->write($output, $newline, $options);
+    }
+
+    /**
+     * @param array $diff
+     * @param bool  $newline
+     *
+     * @return string
+     */
+    private function buildOutput(array $diff, $newline = false)
+    {
         $buffer = '';
 
         // reset cursor position
         $count = count($this->buffer);
-        $mod = ($newline ? 0 : 1);
-        $up = ($count > 0 ? $count - $mod : 0);
+        $mod = ($newline ? 1 : 0);
+        $up = ($count > 0 ? $count - 1 + $mod : $mod);
         if ($up > 0) {
-            $buffer .= $this->cursor->moveUp($up);
+            $buffer .= $this->terminal->moveUp($up);
         }
         $buffer .= "\r";
 
-        for ($i = 0; $i < count($diff); $i++) {
+        $diffSize = count($diff);
+
+        for ($i = 0; $i < $diffSize; $i++) {
             $d = $diff[$i];
             if ($i !== 0) {
                 $buffer .= PHP_EOL;
             }
             if (!is_null($d)) {
                 if ($d['col'] > 0) {
-                    $buffer .= $this->cursor->moveRight($d['col']);
+                    $buffer .= $this->terminal->moveRight($d['col']);
                 }
-                $buffer .= $this->cursor->eraseToEnd() . $d['str'];
+                $buffer .= $this->terminal->eraseToEnd() . $d['str'];
             }
         }
 
-        $this->buffer = $messages;
-
-        $this->output->write($buffer, $newline, $options);
+        return $buffer;
     }
 
     /**
@@ -247,5 +275,26 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
     public function getFormatter()
     {
         return $this->output->getFormatter();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isTrim()
+    {
+        return $this->trim;
+    }
+
+    /**
+     * Should we wrap the input or not, if this is set to false, it will trim each line
+     *
+     * @param bool $trim
+     *
+     * @return $this
+     */
+    public function setTrim($trim)
+    {
+        $this->trim = $trim;
+        return $this;
     }
 }

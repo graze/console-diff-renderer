@@ -1,9 +1,9 @@
 <?php
 
-namespace Graze\BufferedConsole\Test\Unit\ANSI;
+namespace Graze\BufferedConsole\Test\Unit\Terminal\ANSI;
 
-use Graze\BufferedConsole\Cursor\ANSI;
-use Graze\BufferedConsole\Cursor\CursorInterface;
+use Graze\BufferedConsole\Terminal\ANSI;
+use Graze\BufferedConsole\Terminal\CursorInterface;
 use Graze\BufferedConsole\Test\TestCase;
 
 class ANSITest extends TestCase

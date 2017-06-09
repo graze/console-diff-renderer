@@ -29,6 +29,11 @@ $output->reWrite([
 
 This will navigate the cursor to the end of `first line` and write ` here` then navigate the cursor back to the end.
 
+ - Supports Symfony tags (e.g. `<info>`)
+ - Will wrap around based on the terminal size
+ - Can trim based on the terminal size
+ - Will only write the number of lines that are visible to the user
+
 ## Install
 
 Via Composer

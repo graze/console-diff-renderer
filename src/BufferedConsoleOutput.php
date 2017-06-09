@@ -79,13 +79,14 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
     }
 
     /**
-     * @param string|array $messages The message as an array of lines or a single string
-     * @param bool         $newline  Whether to add a newline
-     * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
-     *                               the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
+     * @param string|string[] $messages The message as an array of lines or a single string
+     * @param bool            $newline  Whether to add a newline
+     * @param int             $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
+     *                                  the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
      */
     public function reWrite($messages, $newline = false, $options = 0)
     {
+        $messages = (array) $messages;
         $messages = ($this->trim) ? $this->wrapper->trim($messages) : $this->wrapper->wrap($messages);
 
         if (count($this->buffer) === 0) {
@@ -126,7 +127,9 @@ class BufferedConsoleOutput implements ConsoleOutputInterface
         }
         $buffer .= "\r";
 
-        for ($i = 0; $i < count($diff); $i++) {
+        $diffSize = count($diff);
+
+        for ($i = 0; $i < $diffSize; $i++) {
             $d = $diff[$i];
             if ($i !== 0) {
                 $buffer .= PHP_EOL;

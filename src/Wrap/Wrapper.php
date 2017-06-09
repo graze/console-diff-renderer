@@ -39,14 +39,12 @@ class Wrapper
     }
 
     /**
-     * @param string|string[] $input
+     * @param string[] $input
      *
      * @return string[]
      */
-    public function wrap($input)
+    public function wrap(array $input)
     {
-        $input = (array) $input;
-
         $out = [];
         foreach ($input as $line) {
             foreach ($this->chunk($line) as $new) {
@@ -57,14 +55,12 @@ class Wrapper
     }
 
     /**
-     * @param string|string[] $input
+     * @param string[] $input
      *
      * @return string[]
      */
-    public function trim($input)
+    public function trim(array $input)
     {
-        $input = (array) $input;
-
         $out = [];
         foreach ($input as $line) {
             $chunk = $this->chunk($line);

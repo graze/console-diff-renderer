@@ -34,7 +34,8 @@ class ConsoleDiff extends FirstDiff
 
         if (($options & OutputInterface::OUTPUT_NORMAL) == OutputInterface::OUTPUT_NORMAL) {
             // replace col number with strip_tags version to represent what is outputted to the user
-            for ($i = 0; $i < count($new); $i++) {
+            $len = count($new);
+            for ($i = 0; $i < $len; $i++) {
                 if (isset($diff[$i]) && !is_null($new[$i]) && $diff[$i]['col'] > 0) {
                     $tags = $this->getUnclosedTags(mb_substr($new[$i], 0, $diff[$i]['col']));
                     if (count($tags) > 0) {

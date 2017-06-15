@@ -2,7 +2,7 @@
 
 Contributions are **welcome**!
 
-We accept contributions via Pull Requests on [Github](https://github.com/graze/buffered-console). We also recommend reading [How to write the perfect Pull Request](https://github.com/blog/1943-how-to-write-the-perfect-pull-request) which has some great tips and advice.
+We accept contributions via Pull Requests on [Github](https://github.com/graze/console-diff-renderer). We also recommend reading [How to write the perfect Pull Request](https://github.com/blog/1943-how-to-write-the-perfect-pull-request) which has some great tips and advice.
 
 ## Reporting an Issue
 

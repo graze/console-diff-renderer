@@ -1,11 +1,11 @@
 {
-    "name": "graze/buffered-console",
+    "name": "graze/console-diff-renderer",
     "description": "only write output to a console that has changed",
     "keywords": [
         "graze",
-        "buffered-console"
+        "console-diff-renderer"
     ],
-    "homepage": "https://github.com/graze/buffered-console",
+    "homepage": "https://github.com/graze/console-diff-renderer",
     "license": "MIT",
     "authors": [
         {
@@ -32,14 +32,14 @@
     },
     "autoload": {
         "psr-4": {
-            "Graze\\BufferedConsole\\": "src"
+            "Graze\\DiffRenderer\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Graze\\BufferedConsole\\Test\\": "tests/src",
-            "Graze\\BufferedConsole\\Test\\Unit\\": "tests/unit",
-            "Graze\\BufferedConsole\\Test\\Integration\\": "tests/integration"
+            "Graze\\DiffRenderer\\Test\\": "tests/src",
+            "Graze\\DiffRenderer\\Test\\Unit\\": "tests/unit",
+            "Graze\\DiffRenderer\\Test\\Integration\\": "tests/integration"
         }
     }
 }

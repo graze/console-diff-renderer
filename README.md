@@ -1,20 +1,20 @@
-# Buffered Console
+# Console Diff Renderer
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/graze/buffered-console.svg?style=flat-square)](https://packagist.org/packages/graze/buffered-console)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/graze/console-diff-renderer.svg?style=flat-square)](https://packagist.org/packages/graze/console-diff-renderer)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/graze/buffered-console/master.svg?style=flat-square)](https://travis-ci.org/graze/buffered-console)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/graze/buffered-console.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/buffered-console/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/graze/buffered-console.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/buffered-console)
-[![Total Downloads](https://img.shields.io/packagist/dt/graze/buffered-console.svg?style=flat-square)](https://packagist.org/packages/graze/buffered-console)
+[![Build Status](https://img.shields.io/travis/graze/console-diff-renderer/master.svg?style=flat-square)](https://travis-ci.org/graze/console-diff-renderer)
+[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/graze/console-diff-renderer.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/console-diff-renderer/code-structure)
+[![Quality Score](https://img.shields.io/scrutinizer/g/graze/console-diff-renderer.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/console-diff-renderer)
+[![Total Downloads](https://img.shields.io/packagist/dt/graze/console-diff-renderer.svg?style=flat-square)](https://packagist.org/packages/graze/console-diff-renderer)
 
-Update a multi-line console output, but only write what has changed
+Only render things that have changed to the console.
 
 [![asciicast](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb.png)](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb)
 
 ## Usage
 
 ```php
-$output = new BufferedConsoleOutput($existing);
+$output = new DiffConsoleOutput($existing);
 
 $output->reWrite([
     'first line',
@@ -39,16 +39,22 @@ This will navigate the cursor to the end of `first line` and write ` here` then 
 Via Composer
 
 ``` bash
-$ composer require graze/buffered-console
+$ composer require graze/console-diff-renderer
 ```
 
-## Testing
+## Development
 
-``` bash
+```bash
+$ make build
+```
+
+### Testing
+
+```bash
 $ make test
 ```
 
-## Contributing
+### Contributing
 
 Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 

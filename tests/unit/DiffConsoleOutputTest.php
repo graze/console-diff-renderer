@@ -1,28 +1,28 @@
 <?php
 /**
- * This file is part of graze/buffered-console.
+ * This file is part of graze/console-diff-renderer.
  *
  * Copyright (c) 2017 Nature Delivered Ltd. <https://www.graze.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @license https://github.com/graze/buffered-console/blob/master/LICENSE.md
- * @link    https://github.com/graze/buffered-console
+ * @license https://github.com/graze/console-diff-renderer/blob/master/LICENSE.md
+ * @link    https://github.com/graze/console-diff-renderer
  */
 
-namespace Graze\BufferedConsole\Test\Unit;
+namespace Graze\DiffRenderer\Test\Unit;
 
-use Graze\BufferedConsole\BufferedConsoleOutput;
-use Graze\BufferedConsole\Terminal\Terminal;
-use Graze\BufferedConsole\Test\TestCase;
-use Graze\BufferedConsole\Wrap\Wrapper;
+use Graze\DiffRenderer\DiffConsoleOutput;
+use Graze\DiffRenderer\Terminal\Terminal;
+use Graze\DiffRenderer\Test\TestCase;
+use Graze\DiffRenderer\Wrap\Wrapper;
 use Mockery;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
-class BufferedConsoleOutputTest extends TestCase
+class DiffConsoleOutputTest extends TestCase
 {
-    /** @var BufferedConsoleOutput */
+    /** @var DiffConsoleOutput */
     private $console;
     /** @var mixed */
     private $output;
@@ -43,7 +43,7 @@ class BufferedConsoleOutputTest extends TestCase
         $this->symfonyTerminal->shouldReceive('getHeight')
                               ->andReturn(50);
         $this->terminal = new Terminal(null, $this->symfonyTerminal);
-        $this->console = new BufferedConsoleOutput($this->output, $this->terminal, $this->wrapper);
+        $this->console = new DiffConsoleOutput($this->output, $this->terminal, $this->wrapper);
     }
 
     public function testSingleWrite()

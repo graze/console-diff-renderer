@@ -10,9 +10,9 @@ namespace Graze\DiffRenderer\Terminal;
 class TerminalDimensions implements DimensionsInterface
 {
     /** @var int|null */
-    private $width;
+    private $width = null;
     /** @var int|null */
-    private $height;
+    private $height = null;
     /** @var bool */
     private $initialised = false;
 

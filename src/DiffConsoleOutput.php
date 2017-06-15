@@ -60,25 +60,6 @@ class DiffConsoleOutput implements ConsoleOutputInterface
     }
 
     /**
-     * Sets information about the terminal
-     *
-     * @param TerminalInterface $terminal
-     */
-    public function setTerminal(TerminalInterface $terminal)
-    {
-        $this->terminal = $terminal;
-        $this->wrapper->setWidth($terminal->getWidth());
-    }
-
-    /**
-     * @return TerminalInterface
-     */
-    public function getTerminal()
-    {
-        return $this->terminal;
-    }
-
-    /**
      * @param string|array $messages The message as an array of lines or a single string
      * @param bool         $newline  Whether to add a newline
      * @param int          $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered

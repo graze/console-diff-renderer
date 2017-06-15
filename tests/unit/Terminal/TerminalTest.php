@@ -14,24 +14,23 @@
 namespace Graze\DiffRenderer\Test\Unit\Terminal;
 
 use Graze\DiffRenderer\Terminal\CursorInterface;
+use Graze\DiffRenderer\Terminal\DimensionsInterface;
 use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Test\TestCase;
 use Mockery;
 use ReflectionClass;
-use ReflectionParameter;
-use Symfony\Component\Console\Terminal as SymfonyTerminal;
 
 class TerminalTest extends TestCase
 {
     public function testTerminalUsesTerminalToGetTerminalSize()
     {
-        $symfonyTerminal = Mockery::mock(SymfonyTerminal::class);
-        $symfonyTerminal->shouldReceive('getWidth')
-                        ->andReturn(70);
-        $symfonyTerminal->shouldReceive('getHeight')
-                        ->andReturn(40);
+        $dimensions = Mockery::mock(DimensionsInterface::class);
+        $dimensions->shouldReceive('getWidth')
+                   ->andReturn(70);
+        $dimensions->shouldReceive('getHeight')
+                   ->andReturn(40);
 
-        $terminal = new Terminal(null, $symfonyTerminal);
+        $terminal = new Terminal(null, $dimensions);
 
         $this->assertEquals(70, $terminal->getWidth());
         $this->assertEquals(40, $terminal->getHeight());

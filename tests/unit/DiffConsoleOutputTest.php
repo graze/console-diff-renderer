@@ -14,6 +14,7 @@
 namespace Graze\DiffRenderer\Test\Unit;
 
 use Graze\DiffRenderer\DiffConsoleOutput;
+use Graze\DiffRenderer\Terminal\DimensionsInterface;
 use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Test\TestCase;
 use Graze\DiffRenderer\Wrap\Wrapper;
@@ -31,23 +32,41 @@ class DiffConsoleOutputTest extends TestCase
     /** @var mixed */
     private $wrapper;
     /** @var mixed */
-    private $symfonyTerminal;
+    private $dimensions;
 
     public function setUp()
     {
         $this->output = Mockery::mock(ConsoleOutput::class);
         $this->wrapper = Mockery::mock(Wrapper::class)->makePartial();
-        $this->symfonyTerminal = Mockery::mock(\Symfony\Component\Console\Terminal::class);
-        $this->symfonyTerminal->shouldReceive('getWidth')
-                              ->andReturn(80);
-        $this->symfonyTerminal->shouldReceive('getHeight')
-                              ->andReturn(50);
-        $this->terminal = new Terminal(null, $this->symfonyTerminal);
+        $this->dimensions = Mockery::mock(DimensionsInterface::class);
+        $this->terminal = new Terminal(null, $this->dimensions);
         $this->console = new DiffConsoleOutput($this->output, $this->terminal, $this->wrapper);
+    }
+
+    /**
+     * @param int $width
+     * @param int $height
+     */
+    private function setUpDimensions($width = 80, $height = 50)
+    {
+        $this->dimensions->shouldReceive('getWidth')
+                         ->andReturn($width);
+        $this->dimensions->shouldReceive('getHeight')
+                         ->andReturn($height);
+    }
+
+    public function testTrim()
+    {
+        $this->assertFalse($this->console->isTrim());
+
+        $this->console->setTrim(true);
+
+        $this->assertTrue($this->console->isTrim());
     }
 
     public function testSingleWrite()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with('sample text', false, 0)
                      ->once();
@@ -59,6 +78,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testMultipleWrite()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['first', 'second'], true, 0)
                      ->once();
@@ -70,6 +90,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testUpdate()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['first', 'second'], false, 0)
                      ->once();
@@ -80,6 +101,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testUpdateOverwrite()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['first', 'second'], false, 0)
                      ->once();
@@ -95,6 +117,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testUpdateWithStyling()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['<info>first</info>', '<error>second</error>'], false, 0)
                      ->once();
@@ -115,6 +138,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testUpdateWithStyleReplacement()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['<info>first</info>', '<error>second</error>'], false, 0)
                      ->once();
@@ -130,6 +154,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testUpdateWithNewLine()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['first', 'second'], true, 0)
                      ->once();
@@ -145,6 +170,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testBlankLines()
     {
+        $this->setUpDimensions();
         $this->output->shouldReceive('write')
                      ->with(['first', 'second', 'third', 'fourth'], false, 0)
                      ->once();
@@ -160,6 +186,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testWrappedLines()
     {
+        $this->setUpDimensions();
         $this->wrapper->shouldReceive('wrap')
                       ->with(['123456789012345'])
                       ->once()
@@ -183,6 +210,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testNewlyWrappingLines()
     {
+        $this->setUpDimensions();
         $this->wrapper->shouldReceive('wrap')
                       ->with(['1234567890', '1234567890'])
                       ->once()
@@ -204,6 +232,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testTrimmedLines()
     {
+        $this->setUpDimensions();
         $this->console->setTrim(true);
 
         $this->wrapper->shouldReceive('trim')
@@ -229,13 +258,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testLineTruncationBasedOnTerminalSize()
     {
-        $symfonyTerminal = Mockery::mock(\Symfony\Component\Console\Terminal::class);
-        $symfonyTerminal->shouldReceive('getWidth')
-                        ->andReturn(80);
-        $symfonyTerminal->shouldReceive('getHeight')
-                        ->andReturn(5);
-        $terminal = new Terminal(null, $symfonyTerminal);
-        $this->console->setTerminal($terminal);
+        $this->setUpDimensions(80, 5);
 
         $this->output->shouldReceive('write')
                      ->with(['first', 'second', 'third', 'fourth', 'fifth'], false, 0)
@@ -250,13 +273,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function testLineTruncationWithNewLine()
     {
-        $symfonyTerminal = Mockery::mock(\Symfony\Component\Console\Terminal::class);
-        $symfonyTerminal->shouldReceive('getWidth')
-                        ->andReturn(80);
-        $symfonyTerminal->shouldReceive('getHeight')
-                        ->andReturn(6);
-        $terminal = new Terminal(null, $symfonyTerminal);
-        $this->console->setTerminal($terminal);
+        $this->setUpDimensions(80, 6);
 
         $this->output->shouldReceive('write')
                      ->with(['first', 'second', 'third', 'fourth', 'fifth'], true, 0)

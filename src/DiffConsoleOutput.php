@@ -1,23 +1,23 @@
 <?php
 
 /**
- * This file is part of graze/buffered-console.
+ * This file is part of graze/console-diff-renderer.
  *
  * Copyright (c) 2017 Nature Delivered Ltd. <https://www.graze.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @license https://github.com/graze/buffered-console/blob/master/LICENSE.md
- * @link    https://github.com/graze/buffered-console
+ * @license https://github.com/graze/console-diff-renderer/blob/master/LICENSE.md
+ * @link    https://github.com/graze/console-diff-renderer
  */
 
-namespace Graze\BufferedConsole;
+namespace Graze\DiffRenderer;
 
-use Graze\BufferedConsole\Diff\ConsoleDiff;
-use Graze\BufferedConsole\Terminal\Terminal;
-use Graze\BufferedConsole\Terminal\TerminalInterface;
-use Graze\BufferedConsole\Wrap\Wrapper;
+use Graze\DiffRenderer\Diff\ConsoleDiff;
+use Graze\DiffRenderer\Terminal\Terminal;
+use Graze\DiffRenderer\Terminal\TerminalInterface;
+use Graze\DiffRenderer\Wrap\Wrapper;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -26,7 +26,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * This takes an array of lines to write to the console, does a different and only over-writes what has changed to the
  * console
  */
-class BufferedConsoleOutput implements ConsoleOutputInterface
+class DiffConsoleOutput implements ConsoleOutputInterface
 {
     /** @var string[] */
     private $buffer = [];

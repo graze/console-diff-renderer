@@ -1,20 +1,20 @@
 <?php
 /**
- * This file is part of graze/buffered-console.
+ * This file is part of graze/console-diff-renderer.
  *
  * Copyright (c) 2017 Nature Delivered Ltd. <https://www.graze.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @license https://github.com/graze/buffered-console/blob/master/LICENSE.md
- * @link    https://github.com/graze/buffered-console
+ * @license https://github.com/graze/console-diff-renderer/blob/master/LICENSE.md
+ * @link    https://github.com/graze/console-diff-renderer
  */
 
-namespace Graze\BufferedConsole\Test\Unit\Diff;
+namespace Graze\DiffRenderer\Test\Unit\Diff;
 
-use Graze\BufferedConsole\Diff\ConsoleDiff;
-use Graze\BufferedConsole\Test\TestCase;
+use Graze\DiffRenderer\Diff\ConsoleDiff;
+use Graze\DiffRenderer\Test\TestCase;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleDiffTest extends TestCase

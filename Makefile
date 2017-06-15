@@ -12,7 +12,7 @@ DOCKER_RUN := docker-compose run --rm test
 
 # Building
 
-install: ## Download the dependencies then build the image :rocket:.
+build: ## Download the dependencies then build the image :rocket:.
 	make 'composer-install --optimize-autoloader --ignore-platform-reqs'
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
@@ -36,9 +36,6 @@ lint-fix: ## Run phpcsf and fix possible lint errors.
 test-unit: ## Run the unit testsuite.
 	${DOCKER_RUN} vendor/bin/phpunit --colors=always --testsuite unit
 
-test-integration: ## Run the integration testsuite
-	docker-compose run --rm test-integration vendor/bin/phpunit --colors=always --testsuite integration
-
 test-example: ## Run the example app
 	${DOCKER_RUN} php tests/example/app.php
 
@@ -56,12 +53,6 @@ test-coverage-html: ## Run all tests and output coverage to html.
 
 test-coverage-clover: ## Run all tests and output clover coverage to file.
 	${DOCKER_RUN} phpdbg7 -qrr vendor/bin/phpunit --coverage-clover=./tests/report/coverage.clover
-
-test-echo: ## Run an echo server
-	docker-compose up -d echo
-
-test-echo-stop: ## Stop the echo server
-	docker-compose stop echo
 
 # Help
 

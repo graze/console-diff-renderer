@@ -1,24 +1,24 @@
 <?php
 /**
- * This file is part of graze/buffered-console.
+ * This file is part of graze/console-diff-renderer.
  *
  * Copyright (c) 2017 Nature Delivered Ltd. <https://www.graze.com>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  *
- * @license https://github.com/graze/buffered-console/blob/master/LICENSE.md
- * @link    https://github.com/graze/buffered-console
+ * @license https://github.com/graze/console-diff-renderer/blob/master/LICENSE.md
+ * @link    https://github.com/graze/console-diff-renderer
  */
 
 $composer = require_once __DIR__ . '/../../vendor/autoload.php';
 $composer->setUseIncludePath(true);
 
-use Graze\BufferedConsole\BufferedConsoleOutput;
+use Graze\DiffRenderer\DiffConsoleOutput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 $output = new ConsoleOutput();
-$buffer = new BufferedConsoleOutput($output);
+$buffer = new DiffConsoleOutput($output);
 
 $lines = [
     '<info>first</info> ',

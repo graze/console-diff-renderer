@@ -44,6 +44,10 @@ test-unit: ## Run the unit testsuite.
 test-example: ## Run the example app
 	${DOCKER_RUN} php tests/example/app.php
 
+test-lowest: ## Test using the lowest possible versions of the dependencies
+test-lowest: PREFER_LOWEST=--prefer-lowest
+test-lowest: build-update test
+
 test-matrix: ## Run the unit tests against multiple targets.
 	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:5.6-alpine" build-update test
 	${MAKE} DOCKER_RUN="${DOCKER_RUN_BASE} php:7.0-alpine" build-update test

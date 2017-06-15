@@ -9,7 +9,7 @@
 
 Only render things that have changed to the console.
 
-[![asciicast](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb.png)](https://asciinema.org/a/bokpbfbg8d4yolihmfimtoaqb)
+[![asciicast](https://asciinema.org/a/9233umuuyo8gi0gifmnudjz26.png)](https://asciinema.org/a/9233umuuyo8gi0gifmnudjz26)
 
 ## Usage
 

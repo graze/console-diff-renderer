@@ -25,7 +25,7 @@ A Dockerfile is included in this repository for development. All make commands u
 An initial setup will need to be run to install the environment:
 
 ```shell
-$ make install
+$ make build
 ```
 
 A complete list of commands can be found by running: `$ make help`
@@ -42,8 +42,8 @@ Or run individual suites using:
 
 ```shell
 $ make test-unit
-$ make test-integration
 $ make test-matrix
+$ make test-example
 ```
 
 You can get a coverage report in text, html and clover XML formats:

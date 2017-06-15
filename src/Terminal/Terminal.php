@@ -13,29 +13,23 @@
 
 namespace Graze\DiffRenderer\Terminal;
 
-use Symfony\Component\Console\Terminal as SymfonyTerminal;
-
 class Terminal implements TerminalInterface
 {
     /** @var CursorInterface */
     protected $cursor;
-    /** @var int */
-    private $width = self::DEFAULT_WIDTH;
-    /** @var int */
-    private $height = self::DEFAULT_HEIGHT;
+    /** @var DimensionsInterface */
+    private $dimensions;
 
     /**
      * Terminal will provide cursor and dimension information to the outputter
      *
      * @param CursorInterface|null $cursor
-     * @param SymfonyTerminal      $terminal
+     * @param DimensionsInterface  $dimensions
      */
-    public function __construct(CursorInterface $cursor = null, SymfonyTerminal $terminal = null)
+    public function __construct(CursorInterface $cursor = null, DimensionsInterface $dimensions = null)
     {
         $this->cursor = $cursor ?: new ANSI();
-        $terminal = $terminal ?: new SymfonyTerminal();
-        $this->width = $terminal->getWidth();
-        $this->height = $terminal->getHeight();
+        $this->dimensions = $dimensions ?: new TerminalDimensions();
     }
 
     /**
@@ -43,7 +37,7 @@ class Terminal implements TerminalInterface
      */
     public function getWidth()
     {
-        return $this->width;
+        return $this->dimensions->getWidth();
     }
 
     /**
@@ -51,7 +45,7 @@ class Terminal implements TerminalInterface
      */
     public function getHeight()
     {
-        return $this->height;
+        return $this->dimensions->getHeight();
     }
 
     /**

@@ -101,13 +101,11 @@ class DiffConsoleOutput implements OutputInterface
     }
 
     /**
-     * @param string $string
-     *
-     * @return string
+     * @return TerminalInterface
      */
-    public function filter($string)
+    public function getTerminal()
     {
-        return $this->terminal->filter($string);
+        return $this->terminal;
     }
 
     /**

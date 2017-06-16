@@ -22,11 +22,6 @@ class DiffConsoleOutputPassThroughTest extends TestCase
     {
         parent::setUp();
 
-        $this->terminal = Mockery::mock(TerminalInterface::class);
-        $this->terminal->shouldReceive('getWidth')
-                       ->andReturn(80);
-        $this->terminal->shouldReceive('getHeight')
-                       ->andReturn(50);
         $this->output = Mockery::mock(OutputInterface::class);
         $this->diffOutput = new DiffConsoleOutput($this->output, $this->terminal);
     }
@@ -34,14 +29,6 @@ class DiffConsoleOutputPassThroughTest extends TestCase
     public function testInstanceOf()
     {
         $this->assertInstanceOf(OutputInterface::class, $this->diffOutput);
-    }
-
-    public function testFilter()
-    {
-        $this->terminal->shouldReceive('filter')
-                       ->with('some text')
-                       ->andReturn('monkeys');
-        $this->assertEquals('monkeys', $this->diffOutput->filter('some text'));
     }
 
     public function testGetVerbosity()

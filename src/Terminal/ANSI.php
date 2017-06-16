@@ -30,6 +30,9 @@ class ANSI implements CursorInterface
     const CODE_ERASE_UP               = '[1J';
     const CODE_ERASE_SCREEN           = '[2J';
 
+    /** @var array */
+    protected $filter = [];
+
     /**
      * @param int $line
      * @param int $column
@@ -119,5 +122,38 @@ class ANSI implements CursorInterface
     public function eraseScreen()
     {
         return static::ESCAPE . static::CODE_ERASE_SCREEN;
+    }
+
+    /**
+     * Filter takes a string with Cursor movements and filters them out
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function filter($string)
+    {
+        if (count($this->filter) === 0) {
+            $items = [
+                self::ESCAPE . self::CODE_MOVE_POSITION,
+                self::ESCAPE . self::CODE_MOVE_UP_LINES,
+                self::ESCAPE . self::CODE_MOVE_DOWN_LINES,
+                self::ESCAPE . self::CODE_MOVE_FORWARD,
+                self::ESCAPE . self::CODE_MOVE_BACKWARDS,
+                self::ESCAPE . self::CODE_ERASE_TO_END_OF_LINE,
+                self::ESCAPE . self::CODE_ERASE_TO_START_OF_LINE,
+                self::ESCAPE . self::CODE_ERASE_LINE,
+                self::ESCAPE . self::CODE_ERASE_DOWN,
+                self::ESCAPE . self::CODE_ERASE_UP,
+                self::ESCAPE . self::CODE_ERASE_SCREEN,
+                "\r",
+                "\n",
+            ];
+            $this->filter = array_map(function ($line) {
+                return '/' . str_replace(['%d', '['], ['\d+', '\['], $line) . '/';
+            }, $items);
+        }
+
+        return preg_replace($this->filter, '', $string);
     }
 }

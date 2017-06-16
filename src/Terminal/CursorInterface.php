@@ -16,6 +16,15 @@ namespace Graze\DiffRenderer\Terminal;
 interface CursorInterface
 {
     /**
+     * Filter takes a string with Cursor movements and filters them out
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function filter($string);
+
+    /**
      * Move the cursor to y,x
      *
      * @param int $line

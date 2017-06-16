@@ -158,4 +158,16 @@ class Terminal implements TerminalInterface
     {
         return $this->cursor->eraseScreen();
     }
+
+    /**
+     * Filter takes a string with Cursor movements and filters them out
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function filter($string)
+    {
+        return $this->cursor->filter($string);
+    }
 }

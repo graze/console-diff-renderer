@@ -19,7 +19,7 @@ use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Test\TestCase;
 use Graze\DiffRenderer\Wrap\Wrapper;
 use Mockery;
-use Symfony\Component\Console\Output\ConsoleOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 class DiffConsoleOutputTest extends TestCase
 {
@@ -36,7 +36,7 @@ class DiffConsoleOutputTest extends TestCase
 
     public function setUp()
     {
-        $this->output = Mockery::mock(ConsoleOutput::class);
+        $this->output = Mockery::mock(OutputInterface::class);
         $this->wrapper = Mockery::mock(Wrapper::class)->makePartial();
         $this->dimensions = Mockery::mock(DimensionsInterface::class);
         $this->terminal = new Terminal(null, $this->dimensions);

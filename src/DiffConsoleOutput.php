@@ -19,14 +19,13 @@ use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Terminal\TerminalInterface;
 use Graze\DiffRenderer\Wrap\Wrapper;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * This takes an array of lines to write to the console, does a different and only over-writes what has changed to the
  * console
  */
-class DiffConsoleOutput implements ConsoleOutputInterface
+class DiffConsoleOutput implements OutputInterface
 {
     /** @var string[] */
     private $buffer = [];
@@ -34,7 +33,7 @@ class DiffConsoleOutput implements ConsoleOutputInterface
     private $diff;
     /** @var TerminalInterface */
     private $terminal;
-    /** @var ConsoleOutputInterface */
+    /** @var OutputInterface */
     private $output;
     /** @var Wrapper */
     private $wrapper;
@@ -44,12 +43,12 @@ class DiffConsoleOutput implements ConsoleOutputInterface
     /**
      * Constructor.
      *
-     * @param ConsoleOutputInterface $output
-     * @param TerminalInterface      $terminal
-     * @param Wrapper                $wrapper
+     * @param OutputInterface   $output
+     * @param TerminalInterface $terminal
+     * @param Wrapper           $wrapper
      */
     public function __construct(
-        ConsoleOutputInterface $output,
+        OutputInterface $output,
         TerminalInterface $terminal = null,
         Wrapper $wrapper = null
     ) {
@@ -136,26 +135,6 @@ class DiffConsoleOutput implements ConsoleOutputInterface
         }
 
         return $buffer;
-    }
-
-    /**
-     * Gets the OutputInterface for errors.
-     *
-     * @return OutputInterface
-     */
-    public function getErrorOutput()
-    {
-        return $this->output->getErrorOutput();
-    }
-
-    /**
-     * Sets the OutputInterface used for errors.
-     *
-     * @param OutputInterface $error
-     */
-    public function setErrorOutput(OutputInterface $error)
-    {
-        $this->output->setErrorOutput($error);
     }
 
     /**

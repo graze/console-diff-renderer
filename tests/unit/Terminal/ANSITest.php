@@ -88,4 +88,43 @@ class ANSITest extends TestCase
     {
         $this->assertEquals("\e[2J", $this->cursor->eraseScreen());
     }
+
+    /**
+     * @dataProvider filterData
+     *
+     * @param string $string
+     * @param string $expected
+     */
+    public function testFilter($string, $expected)
+    {
+        $this->assertEquals($expected, $this->cursor->filter($string));
+    }
+
+    /**
+     * @return array
+     */
+    public function filterData()
+    {
+        return [
+            ["bla\e[12;13Hbla", 'blabla'],
+            ["bla\e[1Abla", 'blabla'],
+            ["bla\e[2Bbla", 'blabla'],
+            ["bla\e[3Dbla", 'blabla'],
+            ["bla\e[6Cbla", 'blabla'],
+            ["bla\e[Kbla", 'blabla'],
+            ["bla\e[1Kbla", 'blabla'],
+            ["bla\e[Jbla", 'blabla'],
+            ["bla\e[1Jbla", 'blabla'],
+            ["bla\e[2Jbla", 'blabla'],
+            ["bla\nbla", 'blabla'],
+            ["bla\rbla", 'blabla'],
+            [
+                "bla\e[12;13H" .
+                "bla\e[1A" .
+                "bla\e[2B" .
+                "bla",
+                'blablablabla',
+            ],
+        ];
+    }
 }

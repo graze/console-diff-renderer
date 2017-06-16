@@ -6,7 +6,6 @@ use Graze\DiffRenderer\DiffConsoleOutput;
 use Graze\DiffRenderer\Test\TestCase;
 use Mockery;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
-use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DiffConsoleOutputPassThroughTest extends TestCase
@@ -20,18 +19,13 @@ class DiffConsoleOutputPassThroughTest extends TestCase
     {
         parent::setUp();
 
-        $this->output = Mockery::mock(ConsoleOutputInterface::class);
+        $this->output = Mockery::mock(OutputInterface::class);
         $this->diffOutput = new DiffConsoleOutput($this->output);
     }
 
-    public function testGetErrorOutput()
+    public function testInstanceOf()
     {
-        $output = Mockery::mock(OutputInterface::class);
-        $this->output->shouldReceive('getErrorOutput')
-                     ->with()
-                     ->andReturn($output);
-
-        $this->assertSame($output, $this->diffOutput->getErrorOutput());
+        $this->assertInstanceOf(OutputInterface::class, $this->diffOutput);
     }
 
     public function testGetVerbosity()
@@ -114,16 +108,6 @@ class DiffConsoleOutputPassThroughTest extends TestCase
                      ->once();
 
         $this->diffOutput->setDecorated(true);
-    }
-
-    public function testSetErrorOutput()
-    {
-        $error = Mockery::mock(OutputInterface::class);
-        $this->output->shouldReceive('setErrorOutput')
-                     ->with($error)
-                     ->once();
-
-        $this->diffOutput->setErrorOutput($error);
     }
 
     public function testSetFormatter()

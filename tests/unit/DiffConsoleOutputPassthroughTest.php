@@ -3,6 +3,7 @@
 namespace Graze\DiffRenderer\Test\Unit;
 
 use Graze\DiffRenderer\DiffConsoleOutput;
+use Graze\DiffRenderer\Terminal\TerminalInterface;
 use Graze\DiffRenderer\Test\TestCase;
 use Mockery;
 use Symfony\Component\Console\Formatter\OutputFormatterInterface;
@@ -14,18 +15,33 @@ class DiffConsoleOutputPassThroughTest extends TestCase
     private $diffOutput;
     /** @var mixed */
     private $output;
+    /** @var mixed */
+    private $terminal;
 
     public function setUp()
     {
         parent::setUp();
 
+        $this->terminal = Mockery::mock(TerminalInterface::class);
+        $this->terminal->shouldReceive('getWidth')
+                       ->andReturn(80);
+        $this->terminal->shouldReceive('getHeight')
+                       ->andReturn(50);
         $this->output = Mockery::mock(OutputInterface::class);
-        $this->diffOutput = new DiffConsoleOutput($this->output);
+        $this->diffOutput = new DiffConsoleOutput($this->output, $this->terminal);
     }
 
     public function testInstanceOf()
     {
         $this->assertInstanceOf(OutputInterface::class, $this->diffOutput);
+    }
+
+    public function testFilter()
+    {
+        $this->terminal->shouldReceive('filter')
+                       ->with('some text')
+                       ->andReturn('monkeys');
+        $this->assertEquals('monkeys', $this->diffOutput->filter('some text'));
     }
 
     public function testGetVerbosity()

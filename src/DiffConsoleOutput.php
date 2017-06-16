@@ -101,6 +101,16 @@ class DiffConsoleOutput implements OutputInterface
     }
 
     /**
+     * @param string $string
+     *
+     * @return string
+     */
+    public function filter($string)
+    {
+        return $this->terminal->filter($string);
+    }
+
+    /**
      * @param array $diff
      * @param bool  $newline
      *

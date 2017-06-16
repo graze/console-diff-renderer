@@ -55,6 +55,11 @@ class DiffConsoleOutputTest extends TestCase
                          ->andReturn($height);
     }
 
+    public function testGetTerminal()
+    {
+        $this->assertSame($this->terminal, $this->console->getTerminal());
+    }
+
     public function testTrim()
     {
         $this->assertFalse($this->console->isTrim());

@@ -101,6 +101,14 @@ class DiffConsoleOutput implements OutputInterface
     }
 
     /**
+     * @return TerminalInterface
+     */
+    public function getTerminal()
+    {
+        return $this->terminal;
+    }
+
+    /**
      * @param array $diff
      * @param bool  $newline
      *

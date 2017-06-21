@@ -17,11 +17,12 @@ class ANSI implements CursorInterface
 {
     const ESCAPE = "\e";
 
-    const CODE_MOVE_POSITION   = '[%d;%dH'; // line, column
-    const CODE_MOVE_UP_LINES   = '[%dA'; // lines
-    const CODE_MOVE_DOWN_LINES = '[%dB'; // lines
-    const CODE_MOVE_FORWARD    = '[%dC'; // columns
-    const CODE_MOVE_BACKWARDS  = '[%dD'; // columns
+    const CODE_MOVE_POSITION       = '[%d;%dH'; // line, column
+    const CODE_MOVE_POSITION_FORCE = '[%d;%df'; // line, column
+    const CODE_MOVE_UP_LINES       = '[%dA'; // lines
+    const CODE_MOVE_DOWN_LINES     = '[%dB'; // lines
+    const CODE_MOVE_FORWARD        = '[%dC'; // columns
+    const CODE_MOVE_BACKWARDS      = '[%dD'; // columns
 
     const CODE_ERASE_TO_END_OF_LINE   = '[K';
     const CODE_ERASE_TO_START_OF_LINE = '[1K';
@@ -29,6 +30,8 @@ class ANSI implements CursorInterface
     const CODE_ERASE_DOWN             = '[J';
     const CODE_ERASE_UP               = '[1J';
     const CODE_ERASE_SCREEN           = '[2J';
+
+    const ANSI_REGEX = "/(?:\r|\e(?:\\[[0-9;]*[HfABCDKJcnRsurgim]|\\[=\\[[0-9]{1,2}[hl]|[c\\(\\)78DMH]))/";
 
     /** @var array */
     protected $filter = [];
@@ -128,32 +131,17 @@ class ANSI implements CursorInterface
      * Filter takes a string with Cursor movements and filters them out
      *
      * @param string $string
+     * @param string $replacement Optional character or string to replace specific codes with
      *
      * @return string
      */
-    public function filter($string)
+    public function filter($string, $replacement = '')
     {
-        if (count($this->filter) === 0) {
-            $items = [
-                self::ESCAPE . self::CODE_MOVE_POSITION,
-                self::ESCAPE . self::CODE_MOVE_UP_LINES,
-                self::ESCAPE . self::CODE_MOVE_DOWN_LINES,
-                self::ESCAPE . self::CODE_MOVE_FORWARD,
-                self::ESCAPE . self::CODE_MOVE_BACKWARDS,
-                self::ESCAPE . self::CODE_ERASE_TO_END_OF_LINE,
-                self::ESCAPE . self::CODE_ERASE_TO_START_OF_LINE,
-                self::ESCAPE . self::CODE_ERASE_LINE,
-                self::ESCAPE . self::CODE_ERASE_DOWN,
-                self::ESCAPE . self::CODE_ERASE_UP,
-                self::ESCAPE . self::CODE_ERASE_SCREEN,
-                "\r",
-                "\n",
-            ];
-            $this->filter = array_map(function ($line) {
-                return '/' . str_replace(['%d', '['], ['\d+', '\['], $line) . '/';
-            }, $items);
+        if ($replacement !== '') {
+            return preg_replace_callback(static::ANSI_REGEX, function ($matches) use ($replacement) {
+                return str_repeat($replacement, mb_strlen($matches[0]));
+            }, $string);
         }
-
-        return preg_replace($this->filter, '', $string);
+        return preg_replace(static::ANSI_REGEX, $replacement, $string);
     }
 }

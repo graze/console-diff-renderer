@@ -55,7 +55,7 @@ class DiffConsoleOutput implements OutputInterface
         $this->output = $output;
         $this->diff = new ConsoleDiff();
         $this->terminal = $terminal ?: new Terminal();
-        $this->wrapper = $wrapper ?: new Wrapper($this->terminal->getWidth());
+        $this->wrapper = $wrapper ?: new Wrapper($this->terminal);
     }
 
     /**
@@ -78,12 +78,19 @@ class DiffConsoleOutput implements OutputInterface
      */
     public function reWrite($messages, $newline = false, $options = 0)
     {
-        $messages = (array) $messages;
+        $messages = $this->format($messages, $options);
+        if (count($messages) === 0) {
+            return;
+        }
+
+        $messages = $this->splitNewLines($messages);
         $messages = ($this->trim) ? $this->wrapper->trim($messages) : $this->wrapper->wrap($messages);
+
+        $outputOptions = self::OUTPUT_RAW | $this->output->getVerbosity();
 
         if (count($this->buffer) === 0) {
             $this->buffer = $messages;
-            $this->output->write($messages, $newline, $options);
+            $this->output->write($messages, $newline, $outputOptions);
             return;
         }
 
@@ -97,7 +104,60 @@ class DiffConsoleOutput implements OutputInterface
         $output = $this->buildOutput($diff, $newline);
         $this->buffer = $messages;
 
-        $this->output->write($output, $newline, $options);
+        $this->output->write($output, $newline, $outputOptions);
+    }
+
+    /**
+     * @param string|string[] $messages The message as an array of lines or a single string
+     * @param int             $options  A bitmask of options (one of the OUTPUT or VERBOSITY constants), 0 is considered
+     *                                  the same as self::OUTPUT_NORMAL | self::VERBOSITY_NORMAL
+     *
+     * @return \string[]
+     */
+    private function format($messages, $options = 0)
+    {
+        $messages = (array) $messages;
+
+        $types = self::OUTPUT_NORMAL | self::OUTPUT_RAW | self::OUTPUT_PLAIN;
+        $type = $types & $options ?: self::OUTPUT_NORMAL;
+
+        $verbosities = self::VERBOSITY_QUIET | self::VERBOSITY_NORMAL | self::VERBOSITY_VERBOSE | self::VERBOSITY_VERY_VERBOSE | self::VERBOSITY_DEBUG;
+        $verbosity = $verbosities & $options ?: self::VERBOSITY_NORMAL;
+
+        if ($verbosity > $this->getVerbosity()) {
+            return [];
+        }
+
+        $formatter = $this->output->getFormatter();
+
+        return array_map(function ($message) use ($type, $formatter) {
+            switch ($type) {
+                case OutputInterface::OUTPUT_NORMAL:
+                    return $formatter->format($message);
+                case OutputInterface::OUTPUT_PLAIN:
+                    return strip_tags($formatter->format($message));
+                case OutputInterface::OUTPUT_RAW:
+                default:
+                    return $message;
+            }
+        }, $messages);
+    }
+
+    /**
+     * @param string|string[] $messages
+     *
+     * @return string[]
+     */
+    private function splitNewLines($messages)
+    {
+        $exploded = array_map(function ($line) {
+            return explode("\n", $line);
+        }, (array) $messages);
+        $out = [];
+        array_walk_recursive($exploded, function ($a) use (&$out) {
+            $out[] = $a;
+        });
+        return $out;
     }
 
     /**

@@ -83,16 +83,14 @@ class ConsoleDiff extends FirstDiff
 
         for ($i = 0; $i < $oldLen && $i < $newLen; $i++) {
             if (mb_substr($old, $i, 1) !== mb_substr($new, $i, 1)) {
-                if (
-                    ($i > 0)
+                if (($i > 0)
                     && ((mb_substr($oldStripped, $i - 1, 1) === static::REPLACEMENT_CHAR)
                         || (mb_substr($newStripped, $i - 1, 1) === static::REPLACEMENT_CHAR)
-                    )
-                ) {
+                    )) {
                     return $lastReal > 0 ? $lastReal + 1 : 0;
                 }
                 return $i;
-            } else if (mb_substr($oldStripped, $i, 1) !== static::REPLACEMENT_CHAR) {
+            } elseif (mb_substr($oldStripped, $i, 1) !== static::REPLACEMENT_CHAR) {
                 $lastReal = $i;
             }
         }

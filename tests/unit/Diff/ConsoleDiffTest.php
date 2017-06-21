@@ -15,67 +15,90 @@ namespace Graze\DiffRenderer\Test\Unit\Diff;
 
 use Graze\DiffRenderer\Diff\ConsoleDiff;
 use Graze\DiffRenderer\Test\TestCase;
-use Symfony\Component\Console\Output\OutputInterface;
 
 class ConsoleDiffTest extends TestCase
 {
     /**
-     * @dataProvider differenceWithTagsData
+     * @dataProvider differenceWithANSIData
      *
      * @param string[] $old
      * @param string[] $new
-     * @param int      $options
      * @param string[] $expected
      */
-    public function testDifferenceWithTags(array $old, array $new, $options, array $expected)
+    public function testDifferenceWithANSI(array $old, array $new, array $expected)
     {
         $diff = new ConsoleDiff();
 
-        $this->assertEquals($expected, $diff->lines($old, $new, $options));
+        $this->assertEquals($expected, $diff->lines($old, $new));
     }
 
     /**
      * @return array
      */
-    public function differenceWithTagsData()
+    public function differenceWithANSIData()
     {
         return [
             [ // col now equals the strip_tags version (hence 6)
-                ['<info>first</info>', '<info>second</info>'],
-                ['<info>new</info>', '<info>second cake</info>'],
-                OutputInterface::OUTPUT_NORMAL,
+                ["\e[32mfirst\e[39m", "\e[32msecond\e[39m"],
+                ["\e[32mnew\e[39m", "\e[32msecond cake\e[39m"],
                 [
-                    ['col' => 0, 'str' => '<info>new</info>'],
-                    ['col' => 6, 'str' => '<info> cake</info>'],
+                    ["col" => 0, "str" => "\e[32mnew\e[39m"],
+                    ["col" => 6, "str" => " cake\e[39m"],
                 ],
             ],
             [ // multiple tags should represent all tags
-                ['<info><error>first</error></info>', '<info>second</info>'],
-                ['<info><error>new</error></info>', '<info>second cake</info>'],
-                OutputInterface::OUTPUT_NORMAL,
+                ["\e[32m\e[37;41mfirst\e[39;49m\e[39m", "\e[32msecond\e[39m"],
+                ["\e[32m\e[37;41mnew\e[39;49m\e[39m", "\e[32msecond cake\e[39m"],
                 [
-                    ['col' => 0, 'str' => '<info><error>new</error></info>'],
-                    ['col' => 6, 'str' => '<info> cake</info>'],
+                    ["col" => 0, "str" => "\e[32m\e[37;41mnew\e[39;49m\e[39m"],
+                    ["col" => 6, "str" => " cake\e[39m"],
                 ],
             ],
             [
-                ['<info><error>first</error></info>', '<info>second</info>'],
-                ['<info><error>new</error></info>', '<info>second cake</info>'],
-                OutputInterface::OUTPUT_RAW,
+                ["\e[32m\e[37;41mfirst\e[39;49m\e[39m", "\e[32msecond\e[39m"],
+                ["\e[32m\e[37;41mnew\e[39;49m\e[39m", "\e[32msecond cake\e[39m"],
                 [
-                    ['col' => 13, 'str' => 'new</error></info>'],
-                    ['col' => 12, 'str' => ' cake</info>'],
+                    ["col" => 0, "str" => "\e[32m\e[37;41mnew\e[39;49m\e[39m"],
+                    ["col" => 6, "str" => " cake\e[39m"],
                 ],
             ],
-            [ // support </> as a closing tag for any tag
-                ['<info><fg=bla;bg=bar>first</>', '<info>second</info>'],
-                ['<info><fg=bla;bg=bar>first</> cake', '<info>second cake</info>'],
-                OutputInterface::OUTPUT_NORMAL,
+            [ // col now equals the strip_tags version (hence 6)
+                ["\e[32mfirst\e[39m", "\e[32msecond\e[39m"],
+                ["\e[37;41mnew\e[39m", "\e[32msecond cake\e[39m"],
                 [
-                    ['col' => 5, 'str' => ' cake'],
-                    ['col' => 6, 'str' => '<info> cake</info>'],
+                    ["col" => 0, "str" => "\e[37;41mnew\e[39m"],
+                    ["col" => 6, "str" => " cake\e[39m"],
                 ],
             ],
+        ];
+    }
+
+    /**
+     * @dataProvider firstDifferenceData
+     *
+     * @param string $left
+     * @param string $right
+     * @param int    $pos
+     */
+    public function testFirstDifference($left, $right, $pos)
+    {
+        $diff = new ConsoleDiff();
+        $this->assertEquals($pos, $diff->firstDifference($left, $right));
+    }
+
+    /**
+     * @return array
+     */
+    public function firstDifferenceData()
+    {
+        return [
+            ['abcdef', 'abcdef', -1],
+            ['abcdef', 'abcde', 5],
+            ['abcdef', 'bcdef', 0],
+            ["\e[32mfish", "\e[32mnew", 0],
+            ["new\e[32mfish", "new\e[32mcake", 3],
+            ["\e[32mfish", "\e[32;49mfish", 0],
+            ["new\e[32mcash", "nes\e[32mcash", 2]
         ];
     }
 }

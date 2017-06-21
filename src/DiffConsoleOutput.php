@@ -53,8 +53,8 @@ class DiffConsoleOutput implements OutputInterface
         Wrapper $wrapper = null
     ) {
         $this->output = $output;
-        $this->diff = new ConsoleDiff();
         $this->terminal = $terminal ?: new Terminal();
+        $this->diff = new ConsoleDiff($terminal);
         $this->wrapper = $wrapper ?: new Wrapper($this->terminal);
     }
 
@@ -192,7 +192,7 @@ class DiffConsoleOutput implements OutputInterface
         for ($i = 0; $i < $diffSize; $i++) {
             $d = $diff[$i];
             if ($i !== 0) {
-                $buffer .= PHP_EOL;
+                $buffer .= PHP_EOL . "\r";
             }
             if (!is_null($d)) {
                 if ($d['col'] > 0) {

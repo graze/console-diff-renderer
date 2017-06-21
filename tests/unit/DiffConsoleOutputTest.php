@@ -168,7 +168,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->console->reWrite(['first', 'second']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[5C\e[K thing\n", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[1A\r\e[5C\e[K thing\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second']);
 
@@ -192,14 +192,14 @@ class DiffConsoleOutputTest extends TestCase
         $this->replacements['<info>first</info> thing'] = 'INFO[first] thing';
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[11C\e[K thing\n", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[1A\r\e[11C\e[K thing\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first</info> thing', '<error>second</error>']);
 
         $this->replacements['<info>first thing</info>'] = 'INFO[first thing]';
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[10C\e[K thing]\n", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[1A\r\e[10C\e[K thing]\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first thing</info>', '<error>second</error>']);
 
@@ -218,7 +218,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->console->reWrite(['first', 'second'], true);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[2A\r\e[5C\e[K thing\n", true, static::DEFAULT_OPTIONS)
+                     ->with("\e[2A\r\e[5C\e[K thing\n\r", true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second'], true);
 
@@ -237,7 +237,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->console->reWrite(['first', 'second', 'third', 'fourth']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[3A\r\e[Knew\n\n\n", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[3A\r\e[Knew\n\r\n\r\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['new', 'second', 'third', 'fourth']);
 
@@ -266,7 +266,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->andReturn(['123cake   ', '12345']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[3C\e[Kcake   \n", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[1A\r\e[3C\e[Kcake   \n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123cake   12345']);
     }
@@ -291,7 +291,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->once()
                       ->andReturn(['1234567890', '12345', '1234567890', '12345']);
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\n\e[5C\e[K\n\e[K1234567890\n\e[K12345", false, static::DEFAULT_OPTIONS)
+                     ->with("\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123456789012345', '123456789012345']);
     }
@@ -338,7 +338,7 @@ class DiffConsoleOutputTest extends TestCase
 
         $this->output->shouldReceive('write')
                      ->with(
-                         "\e[4A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth",
+                         "\e[4A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth",
                          false,
                          static::DEFAULT_OPTIONS
                      )
@@ -359,7 +359,7 @@ class DiffConsoleOutputTest extends TestCase
 
         $this->output->shouldReceive('write')
                      ->with(
-                         "\e[5A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth",
+                         "\e[5A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth",
                          true,
                          static::DEFAULT_OPTIONS
                      )

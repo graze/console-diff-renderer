@@ -93,6 +93,7 @@ class ANSITest extends TestCase
      * @dataProvider filterData
      *
      * @param string $string
+     * @param string $replacement
      * @param string $expected
      */
     public function testFilter($string, $replacement, $expected)

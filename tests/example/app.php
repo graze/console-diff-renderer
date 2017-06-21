@@ -21,19 +21,42 @@ $output = new ConsoleOutput();
 $buffer = new DiffConsoleOutput($output);
 
 $lines = [
-    '<info>first</info> ',
-    '<error>second</error> ',
-    'third ',
-    'fourth ',
-    'fifth ',
+    ['title' => 'first', 'padding' => 0],
+    ['title' => 'second', 'padding' => 0],
+    ['title' => 'third', 'padding' => 0],
+    ['title' => 'fourth', 'padding' => 0],
+    ['title' => 'fifth', 'padding' => 0],
 ];
 
-$buffer->reWrite($lines, true);
+$format = function ($arr) {
+    switch (rand(1, 10)) {
+        case 1:
+        case 2:
+        case 3:
+            $title = '<info>' . $arr['title'] . '</info>';
+            break;
+        case 4:
+        case 5:
+        case 6:
+            $title = '<error>' . $arr['title'] . '</error>';
+            break;
+        default:
+            $title = $arr['title'];
+            break;
+    }
+    return $title . ' ' . str_repeat('█', $arr['padding']);
+};
+$out = array_map($format, $lines);
+$buffer->reWrite($out, true);
 
 for ($i = 0; $i < 500; $i++) {
-    usleep(5000);
-    $lines = array_map(function ($str) use ($i) {
-        return $str . (rand(1, 10) > 5 ? '█' : '');
+    usleep(10000);
+    $lines = array_map(function ($arr) {
+        if (rand(1, 10) < 5) {
+            $arr['padding']++;
+        }
+        return $arr;
     }, $lines);
-    $buffer->reWrite($lines, true);
+    $out = array_map($format, $lines);
+    $buffer->reWrite($out, true);
 }

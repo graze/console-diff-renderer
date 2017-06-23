@@ -171,4 +171,16 @@ class Terminal implements TerminalInterface
     {
         return $this->cursor->filter($string, $replacement);
     }
+
+    /**
+     * Get the current formatting for this string
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function getCurrentFormatting($string)
+    {
+        return $this->cursor->getCurrentFormatting($string);
+    }
 }

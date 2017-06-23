@@ -43,7 +43,7 @@ class ConsoleDiffTest extends TestCase
                 ["\e[32mnew\e[39m", "\e[32msecond cake\e[39m"],
                 [
                     ["col" => 0, "str" => "\e[32mnew\e[39m"],
-                    ["col" => 6, "str" => " cake\e[39m"],
+                    ["col" => 6, "str" => "\e[32m cake\e[39m"],
                 ],
             ],
             [ // multiple tags should represent all tags
@@ -51,7 +51,7 @@ class ConsoleDiffTest extends TestCase
                 ["\e[32m\e[37;41mnew\e[39;49m\e[39m", "\e[32msecond cake\e[39m"],
                 [
                     ["col" => 0, "str" => "\e[32m\e[37;41mnew\e[39;49m\e[39m"],
-                    ["col" => 6, "str" => " cake\e[39m"],
+                    ["col" => 6, "str" => "\e[32m cake\e[39m"],
                 ],
             ],
             [
@@ -59,7 +59,7 @@ class ConsoleDiffTest extends TestCase
                 ["\e[32m\e[37;41mnew\e[39;49m\e[39m", "\e[32msecond cake\e[39m"],
                 [
                     ["col" => 0, "str" => "\e[32m\e[37;41mnew\e[39;49m\e[39m"],
-                    ["col" => 6, "str" => " cake\e[39m"],
+                    ["col" => 6, "str" => "\e[32m cake\e[39m"],
                 ],
             ],
             [ // col now equals the strip_tags version (hence 6)
@@ -67,7 +67,7 @@ class ConsoleDiffTest extends TestCase
                 ["\e[37;41mnew\e[39m", "\e[32msecond cake\e[39m"],
                 [
                     ["col" => 0, "str" => "\e[37;41mnew\e[39m"],
-                    ["col" => 6, "str" => " cake\e[39m"],
+                    ["col" => 6, "str" => "\e[32m cake\e[39m"],
                 ],
             ],
         ];

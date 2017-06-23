@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class DiffConsoleOutputTest extends TestCase
 {
-    const DEFAULT_OPTIONS = OutputInterface::VERBOSITY_NORMAL | OutputInterface::OUTPUT_RAW;
+    const DEFAULT_OPTIONS = 34;
 
     /** @var DiffConsoleOutput */
     private $console;

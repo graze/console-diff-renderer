@@ -145,4 +145,31 @@ class ANSITest extends TestCase
             ],
         ];
     }
+
+    /**
+     * @dataProvider getCurrentFormattingData
+     *
+     * @param string $string
+     * @param string $expected
+     */
+    public function testGetCurrentFormatting($string, $expected)
+    {
+        $actual = $this->cursor->getCurrentFormatting($string);
+        $this->assertEquals(bin2hex($expected), bin2hex($actual));
+    }
+
+    /**
+     * return array
+     */
+    public function getCurrentFormattingData()
+    {
+        return [
+            ["bla\e[4mcake", "\e[4m"],
+            ["bla\e[4;3mcake\e[2mfish", "\e[4;3;2m"],
+            ["bla\e[4;0;3mcake", "\e[3m"],
+            ["bla\e[38;2;123;123;123;5;2mcake", "\e[38;2;123;123;123;5;2m"],
+            ["bla\e[32;43mcake\e[39mfish", "\e[43m"],
+            ["bla\e[32mcake\e[39m", ''],
+        ];
+    }
 }

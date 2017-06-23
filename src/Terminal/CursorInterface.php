@@ -26,6 +26,15 @@ interface CursorInterface
     public function filter($string, $replacement = '');
 
     /**
+     * From a given string, get the current open formatting options
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function getCurrentFormatting($string);
+
+    /**
      * Move the cursor to y,x
      *
      * @param int $line

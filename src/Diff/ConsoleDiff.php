@@ -22,6 +22,8 @@ class ConsoleDiff extends FirstDiff
 
     /** @var CursorInterface */
     private $cursor;
+    /** @var string */
+    private $regex;
 
     /**
      * ConsoleDiff constructor.
@@ -31,6 +33,10 @@ class ConsoleDiff extends FirstDiff
     public function __construct(CursorInterface $cursor = null)
     {
         $this->cursor = $cursor ?: new ANSI();
+
+        if ($this->cursor instanceof ANSI) {
+            $this->regex = "/\e\\[(?:[1-9][0-9;]*)m.+?\e\\[(?:0|29|39|49)m/i";
+        }
     }
 
     /**
@@ -50,7 +56,11 @@ class ConsoleDiff extends FirstDiff
         $len = count($new);
         for ($i = 0; $i < $len; $i++) {
             if (isset($diff[$i]) && !is_null($new[$i]) && $diff[$i]['col'] > 0) {
+                $styling = $this->cursor->getCurrentFormatting(mb_substr($new[$i], 0, $diff[$i]['col']));
                 $diff[$i]['col'] = mb_strlen($this->cursor->filter(mb_substr($new[$i], 0, $diff[$i]['col'])));
+                if (mb_strlen($styling) > 0) {
+                    $diff[$i]['str'] = $styling . $diff[$i]['str'];
+                }
             }
         }
 
@@ -86,7 +96,8 @@ class ConsoleDiff extends FirstDiff
                 if (($i > 0)
                     && ((mb_substr($oldStripped, $i - 1, 1) === static::REPLACEMENT_CHAR)
                         || (mb_substr($newStripped, $i - 1, 1) === static::REPLACEMENT_CHAR)
-                    )) {
+                    )
+                ) {
                     return $lastReal > 0 ? $lastReal + 1 : 0;
                 }
                 return $i;

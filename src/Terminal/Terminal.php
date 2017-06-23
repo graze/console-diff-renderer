@@ -163,11 +163,24 @@ class Terminal implements TerminalInterface
      * Filter takes a string with Cursor movements and filters them out
      *
      * @param string $string
+     * @param string $replacement Optional replacement for each item
      *
      * @return string
      */
-    public function filter($string)
+    public function filter($string, $replacement = '')
     {
-        return $this->cursor->filter($string);
+        return $this->cursor->filter($string, $replacement);
+    }
+
+    /**
+     * Get the current formatting for this string
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function getCurrentFormatting($string)
+    {
+        return $this->cursor->getCurrentFormatting($string);
     }
 }

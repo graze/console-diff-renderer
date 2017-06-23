@@ -13,8 +13,11 @@
 
 namespace Graze\DiffRenderer\Test\Unit\Wrap;
 
+use Graze\DiffRenderer\Terminal\DimensionsInterface;
+use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Test\TestCase;
 use Graze\DiffRenderer\Wrap\Wrapper;
+use Mockery;
 
 class WrapperTest extends TestCase
 {
@@ -25,12 +28,13 @@ class WrapperTest extends TestCase
 
     public function testWrapper()
     {
-        $wrapper = new Wrapper(10);
+        $dimensions = Mockery::mock(DimensionsInterface::class);
+        $dimensions->shouldReceive('getWidth')
+                   ->andReturn(10, 20);
+        $terminal = new Terminal(null, $dimensions);
+        $wrapper = new Wrapper($terminal);
 
         $this->assertEquals(10, $wrapper->getWidth());
-
-        $this->assertSame($wrapper, $wrapper->setWidth(20));
-
         $this->assertEquals(20, $wrapper->getWidth());
     }
 
@@ -43,7 +47,11 @@ class WrapperTest extends TestCase
      */
     public function testWrap($input, $width, array $expected)
     {
-        $wrapper = new Wrapper($width);
+        $dimensions = Mockery::mock(DimensionsInterface::class);
+        $dimensions->shouldReceive('getWidth')
+                   ->andReturn($width);
+        $terminal = new Terminal(null, $dimensions);
+        $wrapper = new Wrapper($terminal);
 
         $this->assertEquals($expected, $wrapper->wrap($input));
     }
@@ -61,6 +69,11 @@ class WrapperTest extends TestCase
                     '12345',
                     '67890',
                 ],
+            ],
+            [ // boundary test
+                ['123456'],
+                5,
+                ['12345', '6'],
             ],
             [ // array of strings
                 [
@@ -86,15 +99,28 @@ class WrapperTest extends TestCase
             ],
             [ // strip tags and wrap on non stripped version
                 [
-                    '<info>1234567890</info>1234567890<warning>12345678901234567890</warning>',
-                    '<error>12345678901234567890</error>1234567890',
+                    "\e[13m1234567890\e[42m1234567890\e[15m12345678901234567890\e[42m",
+                    "\e[17m12345678901234567890\e[42m1234567890",
                 ],
                 20,
                 [
-                    '<info>1234567890</info>1234567890<warning>',
-                    '12345678901234567890</warning>',
-                    '<error>12345678901234567890</error>',
+                    "\e[13m1234567890\e[42m1234567890\e[15m",
+                    "12345678901234567890\e[42m",
+                    "\e[17m12345678901234567890\e[42m",
                     '1234567890',
+                ],
+            ],
+            [ // ignore tags
+                ['<info>info</info>infowarning<warning>warning</warning>warning'],
+                10,
+                [
+                    '<info>info',
+                    '</info>inf',
+                    'owarning<w',
+                    'arning>war',
+                    'ning</warn',
+                    'ing>warnin',
+                    'g'
                 ],
             ],
         ];
@@ -109,7 +135,11 @@ class WrapperTest extends TestCase
      */
     public function testTrim($input, $width, array $expected)
     {
-        $wrapper = new Wrapper($width);
+        $dimensions = Mockery::mock(DimensionsInterface::class);
+        $dimensions->shouldReceive('getWidth')
+                   ->andReturn($width);
+        $terminal = new Terminal(null, $dimensions);
+        $wrapper = new Wrapper($terminal);
 
         $this->assertEquals($expected, $wrapper->trim($input));
     }
@@ -124,6 +154,16 @@ class WrapperTest extends TestCase
                 ['1234567890'],
                 5,
                 ['12345'],
+            ],
+            [ // boundary test
+                ['123456'],
+                5,
+                ['12345'],
+            ],
+            [
+                ["\x20\x20\x20\x20\x20"],
+                3,
+                ["\x20\x20\x20"],
             ],
             [ // array of strings
                 [
@@ -141,16 +181,21 @@ class WrapperTest extends TestCase
                 20,
                 ['😀😃😄😁😆😅😂🤣☺😊😇🙂🙃😉😌😍😘😗😙😚'],
             ],
-            [ // strip tags and wrap on non stripped version
+            [ // strip tags and trim on non stripped version
                 [
-                    '<info>1234567890</info>1234567890<warning>12345678901234567890</warning>',
-                    '<error>12345678901234567890</error>1234567890',
+                    "\e[13m1234567890\e[42m1234567890\e[15m12345678901234567890\e[42m",
+                    "\e[17m12345678901234567890\e[42m1234567890",
                 ],
                 20,
                 [
-                    '<info>1234567890</info>1234567890<warning>',
-                    '<error>12345678901234567890</error>',
+                    "\e[13m1234567890\e[42m1234567890\e[15m",
+                    "\e[17m12345678901234567890\e[42m",
                 ],
+            ],
+            [ // ignore tags
+                ['<info>info</info>infowarning<warning>warning</warning>warning'],
+                18,
+                ['<info>info</info>i'],
             ],
         ];
     }

@@ -13,21 +13,23 @@
 
 namespace Graze\DiffRenderer\Wrap;
 
-use Graze\DiffRenderer\Terminal\DimensionsInterface;
+use Graze\DiffRenderer\Terminal\TerminalInterface;
 
 class Wrapper
 {
-    /** @var int */
-    private $width = DimensionsInterface::DEFAULT_WIDTH;
+    const REPLACEMENT_CHAR = "\6";
+
+    /** @var TerminalInterface */
+    private $terminal;
 
     /**
      * Wrapper constructor.
      *
-     * @param int $width
+     * @param TerminalInterface $terminal
      */
-    public function __construct($width)
+    public function __construct(TerminalInterface $terminal)
     {
-        $this->width = $width;
+        $this->terminal = $terminal;
     }
 
     /**
@@ -35,18 +37,7 @@ class Wrapper
      */
     public function getWidth()
     {
-        return $this->width;
-    }
-
-    /**
-     * @param int $width
-     *
-     * @return $this
-     */
-    public function setWidth($width)
-    {
-        $this->width = $width;
-        return $this;
+        return $this->terminal->getWidth();
     }
 
     /**
@@ -87,28 +78,26 @@ class Wrapper
      */
     private function chunk($line)
     {
-        if (mb_strlen($line) <= $this->width) {
+        $width = $this->getWidth();
+        if (mb_strlen($line) <= $width) {
             return [$line];
         }
-        $stripped = strip_tags($line);
+        $stripped = $this->terminal->filter($line, static::REPLACEMENT_CHAR);
         $offset = 0;
         $out = [];
 
-        // create a stripped tags version of the string
-        // loop through both and only move the counter if both characters are equal
-        // yield when we get to <width> for the stripped tags version
-        for ($i = 0, $j = 0; $i <= mb_strlen($stripped); $j++) {
-            if (mb_substr($stripped, $i, 1) === mb_substr($line, $j, 1)) {
-                if ($i >= $this->width && $i % $this->width == 0) {
-                    $out[] = mb_substr($line, $offset, $j - $offset);
-                    $offset = $j;
+        for ($i = 0, $j = 0; $i <= mb_strlen($stripped); $i++) {
+            if (mb_substr($stripped, $i, 1) != static::REPLACEMENT_CHAR) {
+                if ($j > 0 && $j % $width == 0) {
+                    $out[] = mb_substr($line, $offset, $i - $offset);
+                    $offset = $i;
                 }
-                $i++;
+                $j++;
             }
         }
 
         // return any remaining entries
-        if ($offset != $j - 1) {
+        if ($offset != $i - 1) {
             $out[] = mb_substr($line, $offset);
         }
         return $out;

@@ -19,10 +19,13 @@ use Graze\DiffRenderer\Terminal\Terminal;
 use Graze\DiffRenderer\Test\TestCase;
 use Graze\DiffRenderer\Wrap\Wrapper;
 use Mockery;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DiffConsoleOutputTest extends TestCase
 {
+    const DEFAULT_OPTIONS = 34;
+
     /** @var DiffConsoleOutput */
     private $console;
     /** @var mixed */
@@ -33,10 +36,29 @@ class DiffConsoleOutputTest extends TestCase
     private $wrapper;
     /** @var mixed */
     private $dimensions;
+    /** @var mixed */
+    private $formatter;
+    /** @var string[] */
+    private $replacements;
 
     public function setUp()
     {
+        $this->formatter = Mockery::mock(OutputFormatterInterface::class);
+        $auto = '';
+        $this->formatter->shouldReceive('format')
+                        ->with(Mockery::on(function ($string) use (&$auto) {
+                            $auto = $string;
+                            return true;
+                        }))
+                        ->andReturnUsing(function () use (&$auto) {
+                            if (isset($this->replacements[$auto])) {
+                                return $this->replacements[$auto];
+                            }
+                            return $auto;
+                        });
         $this->output = Mockery::mock(OutputInterface::class);
+        $this->output->shouldReceive('getFormatter')
+                     ->andReturn($this->formatter);
         $this->wrapper = Mockery::mock(Wrapper::class)->makePartial();
         $this->dimensions = Mockery::mock(DimensionsInterface::class);
         $this->terminal = new Terminal(null, $this->dimensions);
@@ -51,6 +73,8 @@ class DiffConsoleOutputTest extends TestCase
     {
         $this->dimensions->shouldReceive('getWidth')
                          ->andReturn($width);
+        $this->wrapper->shouldReceive('getWidth')
+                      ->andReturn($width);
         $this->dimensions->shouldReceive('getHeight')
                          ->andReturn($height);
     }
@@ -81,9 +105,34 @@ class DiffConsoleOutputTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testVerbosityIsHandledBeforeOutput()
+    {
+        $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
+        $this->output->shouldNotReceive('write');
+
+        $this->console->reWrite('no write', false, OutputInterface::VERBOSITY_VERBOSE | OutputInterface::OUTPUT_NORMAL);
+    }
+
+    public function testVerbosityUsesOutputVerbosity()
+    {
+        $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_VERBOSE);
+
+        $this->output->shouldReceive('write')
+                     ->with(['test'], false, OutputInterface::VERBOSITY_VERBOSE | OutputInterface::OUTPUT_RAW)
+                     ->once();
+
+        $this->console->reWrite('test');
+    }
+
     public function testMultipleWrite()
     {
         $this->setUpDimensions();
+
         $this->output->shouldReceive('write')
                      ->with(['first', 'second'], true, 0)
                      ->once();
@@ -93,11 +142,14 @@ class DiffConsoleOutputTest extends TestCase
         $this->assertTrue(true);
     }
 
-    public function testUpdate()
+    public function testReWrite()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], false, 0)
+                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second']);
 
@@ -107,52 +159,49 @@ class DiffConsoleOutputTest extends TestCase
     public function testUpdateOverwrite()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], false, 0)
+                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[5C\e[K thing\n", false, 0)
+                     ->with("\e[1A\r\e[5C\e[K thing\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second']);
 
         $this->assertTrue(true);
     }
 
-    public function testUpdateWithStyling()
+    public function testUpdateWithFormatting()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
+        $this->replacements['<info>first</info>'] = 'INFO[first]';
+        $this->replacements['<error>second</error>'] = 'ERROR[second]';
+
         $this->output->shouldReceive('write')
-                     ->with(['<info>first</info>', '<error>second</error>'], false, 0)
+                     ->with(["INFO[first]", "ERROR[second]"], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first</info>', '<error>second</error>']);
 
+        $this->replacements['<info>first</info> thing'] = 'INFO[first] thing';
+
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[5C\e[K thing\n", false, 0)
+                     ->with("\e[1A\r\e[11C\e[K thing\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first</info> thing', '<error>second</error>']);
 
+        $this->replacements['<info>first thing</info>'] = 'INFO[first thing]';
+
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[5C\e[K<info> thing</info>\n", false, 0)
+                     ->with("\e[1A\r\e[10C\e[K thing]\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first thing</info>', '<error>second</error>']);
-
-        $this->assertTrue(true);
-    }
-
-    public function testUpdateWithStyleReplacement()
-    {
-        $this->setUpDimensions();
-        $this->output->shouldReceive('write')
-                     ->with(['<info>first</info>', '<error>second</error>'], false, 0)
-                     ->once();
-        $this->console->reWrite(['<info>first</info>', '<error>second</error>']);
-
-        $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[K<info>new</info> thing\n\e[K<error>fish</error>", false, 0)
-                     ->once();
-        $this->console->reWrite(['<info>new</info> thing', '<error>fish</error>']);
 
         $this->assertTrue(true);
     }
@@ -160,13 +209,16 @@ class DiffConsoleOutputTest extends TestCase
     public function testUpdateWithNewLine()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], true, 0)
+                     ->with(['first', 'second'], true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second'], true);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[2A\r\e[5C\e[K thing\n", true, 0)
+                     ->with("\e[2A\r\e[5C\e[K thing\n\r", true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second'], true);
 
@@ -176,13 +228,16 @@ class DiffConsoleOutputTest extends TestCase
     public function testBlankLines()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second', 'third', 'fourth'], false, 0)
+                     ->with(['first', 'second', 'third', 'fourth'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[3A\r\e[Knew\n\n\n", false, 0)
+                     ->with("\e[3A\r\e[Knew\n\r\n\r\n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['new', 'second', 'third', 'fourth']);
 
@@ -192,13 +247,16 @@ class DiffConsoleOutputTest extends TestCase
     public function testWrappedLines()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->wrapper->shouldReceive('wrap')
                       ->with(['123456789012345'])
                       ->once()
                       ->andReturn(['1234567890', '12345']);
 
         $this->output->shouldReceive('write')
-                     ->with(['1234567890', '12345'], false, 0)
+                     ->with(['1234567890', '12345'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123456789012345']);
 
@@ -208,7 +266,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->andReturn(['123cake   ', '12345']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\e[3C\e[Kcake   \n", false, 0)
+                     ->with("\e[1A\r\e[3C\e[Kcake   \n\r", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123cake   12345']);
     }
@@ -216,12 +274,15 @@ class DiffConsoleOutputTest extends TestCase
     public function testNewlyWrappingLines()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->wrapper->shouldReceive('wrap')
                       ->with(['1234567890', '1234567890'])
                       ->once()
                       ->andReturn(['1234567890', '1234567890']);
         $this->output->shouldReceive('write')
-                     ->with(['1234567890', '1234567890'], false, 0)
+                     ->with(['1234567890', '1234567890'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['1234567890', '1234567890']);
 
@@ -230,7 +291,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->once()
                       ->andReturn(['1234567890', '12345', '1234567890', '12345']);
         $this->output->shouldReceive('write')
-                     ->with("\e[1A\r\n\e[5C\e[K\n\e[K1234567890\n\e[K12345", false, 0)
+                     ->with("\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123456789012345', '123456789012345']);
     }
@@ -238,6 +299,9 @@ class DiffConsoleOutputTest extends TestCase
     public function testTrimmedLines()
     {
         $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
         $this->console->setTrim(true);
 
         $this->wrapper->shouldReceive('trim')
@@ -246,7 +310,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->andReturn(['1234567890']);
 
         $this->output->shouldReceive('write')
-                     ->with(['1234567890'], false, 0)
+                     ->with(['1234567890'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123456789012345']);
 
@@ -256,7 +320,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->andReturn(['123cake   ']);
 
         $this->output->shouldReceive('write')
-                     ->with("\r\e[3C\e[Kcake   ", false, 0)
+                     ->with("\r\e[3C\e[Kcake   ", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123cake   12345']);
     }
@@ -264,14 +328,20 @@ class DiffConsoleOutputTest extends TestCase
     public function testLineTruncationBasedOnTerminalSize()
     {
         $this->setUpDimensions(80, 5);
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], false, 0)
+                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth']);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[4A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth", false, 0)
+                     ->with(
+                         "\e[4A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth",
+                         false,
+                         static::DEFAULT_OPTIONS
+                     )
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth']);
     }
@@ -279,15 +349,33 @@ class DiffConsoleOutputTest extends TestCase
     public function testLineTruncationWithNewLine()
     {
         $this->setUpDimensions(80, 6);
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
         $this->output->shouldReceive('write')
-                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], true, 0)
+                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth'], true);
 
         $this->output->shouldReceive('write')
-                     ->with("\e[5A\r\e[Ksecond\n\e[Kthird\n\e[Kfourth\n\e[1C\e[Kifth\n\e[Ksixth", true, 0)
+                     ->with(
+                         "\e[5A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth",
+                         true,
+                         static::DEFAULT_OPTIONS
+                     )
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth'], true);
+    }
+
+    public function testSplitNewLines()
+    {
+        $this->setUpDimensions();
+        $this->output->shouldReceive('getVerbosity')
+                     ->andReturn(OutputInterface::VERBOSITY_NORMAL);
+
+        $this->output->shouldReceive('write')
+                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
+                     ->once();
+        $this->console->reWrite("first\nsecond");
     }
 }

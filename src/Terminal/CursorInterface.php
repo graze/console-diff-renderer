@@ -19,10 +19,20 @@ interface CursorInterface
      * Filter takes a string with Cursor movements and filters them out
      *
      * @param string $string
+     * @param string $replacement Optional replacement to use for each cursor control code
      *
      * @return string
      */
-    public function filter($string);
+    public function filter($string, $replacement = '');
+
+    /**
+     * Gets the styling that would be active at the end of this string
+     *
+     * @param string $string
+     *
+     * @return string
+     */
+    public function getCurrentFormatting($string);
 
     /**
      * Move the cursor to y,x

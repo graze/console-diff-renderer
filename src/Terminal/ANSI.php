@@ -220,7 +220,7 @@ class ANSI implements CursorInterface
     }
 
     /**
-     * Gets the format to be applied to anything after this string
+     * Gets the styling that would be active at the end of this string
      *
      * @param string $string
      *
@@ -241,13 +241,9 @@ class ANSI implements CursorInterface
                     if ($key === static::STYLE_RESET) {
                         $stack = [];
                     } else {
-                        $out = [];
-                        foreach ($stack as $item) {
-                            if (!in_array($key, $this->formats[$item['key']])) {
-                                $out[] = $item;
-                            }
-                        }
-                        $stack = $out;
+                        $stack = array_filter($stack, function ($item) use ($key) {
+                            return !in_array($key, $this->formats[$item['key']]);
+                        });
                     }
                 }
             }
@@ -264,6 +260,8 @@ class ANSI implements CursorInterface
     }
 
     /**
+     * Get all the styles in order that should be applied at the end
+     *
      * @param string $string
      *
      * @return \Generator|void Iterator of numbers representing styles
@@ -271,8 +269,6 @@ class ANSI implements CursorInterface
     private function getStyleStack($string)
     {
         if (preg_match_all(static::REGEX_FORMAT, $string, $matches)) {
-            // loop through each match; split into segments, if in list, add to stack,
-            // if not search current stack on what to turn off [if 0|'' then clear stack]
             foreach ($matches[1] as $grouping) {
                 if (preg_match_all(static::REGEX_STYLE_ITEM, $grouping, $styles)) {
                     foreach ($styles[0] as $style) {

@@ -22,8 +22,6 @@ class ConsoleDiff extends FirstDiff
 
     /** @var CursorInterface */
     private $cursor;
-    /** @var string */
-    private $regex;
 
     /**
      * ConsoleDiff constructor.
@@ -33,10 +31,6 @@ class ConsoleDiff extends FirstDiff
     public function __construct(CursorInterface $cursor = null)
     {
         $this->cursor = $cursor ?: new ANSI();
-
-        if ($this->cursor instanceof ANSI) {
-            $this->regex = "/\e\\[(?:[1-9][0-9;]*)m.+?\e\\[(?:0|29|39|49)m/i";
-        }
     }
 
     /**

@@ -26,7 +26,7 @@ interface CursorInterface
     public function filter($string, $replacement = '');
 
     /**
-     * From a given string, get the current open formatting options
+     * Gets the styling that would be active at the end of this string
      *
      * @param string $string
      *

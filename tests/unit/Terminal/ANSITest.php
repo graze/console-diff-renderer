@@ -170,6 +170,9 @@ class ANSITest extends TestCase
             ["bla\e[38;2;123;123;123;5;2mcake", "\e[38;2;123;123;123;5;2m"],
             ["bla\e[32;43mcake\e[39mfish", "\e[43m"],
             ["bla\e[32mcake\e[39m", ''],
+            ["bla\e[32,42mcake\e[mboo", ''],
+            ["bla\e[1;2;3;4;5mcake\e[22m", "\e[3;4;5m"],
+            ["bla\e[32;43mcake\e[38;5;123mboo\e[49m", "\e[32;38;5;123m"] // this could be \e[38;5;123m but still works
         ];
     }
 }

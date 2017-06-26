@@ -89,6 +89,16 @@ class ANSITest extends TestCase
         $this->assertEquals("\e[2J", $this->cursor->eraseScreen());
     }
 
+    public function testShowCursor()
+    {
+        $this->assertEquals("\e[?25h", $this->cursor->showCursor());
+    }
+
+    public function testHideCursor()
+    {
+        $this->assertEquals("\e[?25l", $this->cursor->hideCursor());
+    }
+
     /**
      * @dataProvider filterData
      *

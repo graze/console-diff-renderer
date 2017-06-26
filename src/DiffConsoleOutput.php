@@ -202,7 +202,7 @@ class DiffConsoleOutput implements OutputInterface
             }
         }
 
-        return $buffer;
+        return $this->terminal->hideCursor() . $buffer . $this->terminal->showCursor();
     }
 
     /**

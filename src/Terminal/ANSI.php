@@ -31,7 +31,10 @@ class ANSI implements CursorInterface
     const CODE_ERASE_UP               = '[1J';
     const CODE_ERASE_SCREEN           = '[2J';
 
-    const REGEX_ANSI       = "/(?:\r|\e(?:\\[[0-9;]*[HfABCDKJcnRsurgim]|\\[=\\[[0-9]{1,2}[hl]|[c\\(\\)78DMH]))/";
+    const CODE_HIDE_CURSOR = '[?25l';
+    const CODE_SHOW_CURSOR = '[?25h';
+
+    const REGEX_ANSI       = "/(?:\r|\e(?:\\[[0-9;]*[HfABCDKJcnRsurgim]|\\[(?:=|\?)\\[[0-9]{1,2}[hl]|[c\\(\\)78DMH]))/";
     const REGEX_FORMAT     = "/\e\\[((?:[0-9][0-9;]*|))m/";
     const REGEX_STYLE_ITEM = '/\b(?:(?:([34]8);(?:2;\d{1,3};\d{1,3};\d{1,3}|5;\d{1,3}))|(\d+)(?<!38|48))\b/';
     const REGEX_FIRST_KEY  = '/^(\d+)/';
@@ -199,6 +202,22 @@ class ANSI implements CursorInterface
     public function eraseScreen()
     {
         return static::ESCAPE . static::CODE_ERASE_SCREEN;
+    }
+
+    /**
+     * @return string
+     */
+    public function hideCursor()
+    {
+        return static::ESCAPE . static::CODE_HIDE_CURSOR;
+    }
+
+    /**
+     * @return string
+     */
+    public function showCursor()
+    {
+        return static::ESCAPE . static::CODE_SHOW_CURSOR;
     }
 
     /**

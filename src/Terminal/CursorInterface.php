@@ -114,4 +114,14 @@ interface CursorInterface
      * @return string
      */
     public function eraseScreen();
+
+    /**
+     * @return string
+     */
+    public function hideCursor();
+
+    /**
+     * @return string
+     */
+    public function showCursor();
 }

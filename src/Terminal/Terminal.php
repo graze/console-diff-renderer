@@ -160,6 +160,22 @@ class Terminal implements TerminalInterface
     }
 
     /**
+     * @return string
+     */
+    public function hideCursor()
+    {
+        return $this->cursor->hideCursor();
+    }
+
+    /**
+     * @return string
+     */
+    public function showCursor()
+    {
+        return $this->cursor->showCursor();
+    }
+
+    /**
      * Filter takes a string with Cursor movements and filters them out
      *
      * @param string $string

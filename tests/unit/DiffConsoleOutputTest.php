@@ -219,7 +219,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[2A\r\e[5C\e[K thing\n\r\e[?25h", true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second'], true);
-
     }
 
     public function testBlankLines()

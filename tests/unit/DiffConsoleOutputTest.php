@@ -115,8 +115,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->once();
 
         $this->console->write('sample text');
-
-        $this->assertTrue(true);
     }
 
     public function testVerbosityIsHandledBeforeOutput()
@@ -152,8 +150,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->once();
 
         $this->console->writeln(['first', 'second']);
-
-        $this->assertTrue(true);
     }
 
     public function testReWrite()
@@ -179,8 +175,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[1A\r\e[5C\e[K thing\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second']);
-
-        $this->assertTrue(true);
     }
 
     public function testUpdateWithFormatting()
@@ -208,8 +202,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[1A\r\e[10C\e[K thing]\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first thing</info>', '<error>second</error>']);
-
-        $this->assertTrue(true);
     }
 
     public function testUpdateWithNewLine()
@@ -228,7 +220,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->once();
         $this->console->reWrite(['first thing', 'second'], true);
 
-        $this->assertTrue(true);
     }
 
     public function testBlankLines()
@@ -244,8 +235,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[3A\r\e[Knew\n\r\n\r\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['new', 'second', 'third', 'fourth']);
-
-        $this->assertTrue(true);
     }
 
     public function testWrappedLines()

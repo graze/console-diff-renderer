@@ -90,7 +90,15 @@ class DiffConsoleOutput implements OutputInterface
 
         if (count($this->buffer) === 0) {
             $this->buffer = $messages;
-            $this->output->write($messages, $newline, $outputOptions);
+            if ($newline) {
+                $this->output->write($messages, true, $outputOptions);
+            } else {
+                $i = 0;
+                $total = count($messages);
+                foreach ($messages as $message) {
+                    $this->output->write($message, ++$i < $total, $outputOptions);
+                }
+            }
             return;
         }
 

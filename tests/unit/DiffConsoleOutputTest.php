@@ -79,6 +79,20 @@ class DiffConsoleOutputTest extends TestCase
                          ->andReturn($height);
     }
 
+    /**
+     * @param array $lines
+     * @param int   $options
+     */
+    private function expectWrite(array $lines, $options = self::DEFAULT_OPTIONS)
+    {
+        $i = 0;
+        foreach ($lines as $line) {
+            $this->output->shouldReceive('write')
+                         ->with($line, ++$i < count($lines), $options)
+                         ->once();
+        }
+    }
+
     public function testGetTerminal()
     {
         $this->assertSame($this->terminal, $this->console->getTerminal());
@@ -101,8 +115,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->once();
 
         $this->console->write('sample text');
-
-        $this->assertTrue(true);
     }
 
     public function testVerbosityIsHandledBeforeOutput()
@@ -123,7 +135,7 @@ class DiffConsoleOutputTest extends TestCase
                      ->andReturn(OutputInterface::VERBOSITY_VERBOSE);
 
         $this->output->shouldReceive('write')
-                     ->with(['test'], false, OutputInterface::VERBOSITY_VERBOSE | OutputInterface::OUTPUT_RAW)
+                     ->with('test', false, OutputInterface::VERBOSITY_VERBOSE | OutputInterface::OUTPUT_RAW)
                      ->once();
 
         $this->console->reWrite('test');
@@ -138,8 +150,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->once();
 
         $this->console->writeln(['first', 'second']);
-
-        $this->assertTrue(true);
     }
 
     public function testReWrite()
@@ -148,12 +158,8 @@ class DiffConsoleOutputTest extends TestCase
         $this->output->shouldReceive('getVerbosity')
                      ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
-        $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['first', 'second']);
         $this->console->reWrite(['first', 'second']);
-
-        $this->assertTrue(true);
     }
 
     public function testUpdateOverwrite()
@@ -162,17 +168,13 @@ class DiffConsoleOutputTest extends TestCase
         $this->output->shouldReceive('getVerbosity')
                      ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
-        $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['first', 'second']);
         $this->console->reWrite(['first', 'second']);
 
         $this->output->shouldReceive('write')
                      ->with("\e[?25l\e[1A\r\e[5C\e[K thing\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second']);
-
-        $this->assertTrue(true);
     }
 
     public function testUpdateWithFormatting()
@@ -184,9 +186,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->replacements['<info>first</info>'] = 'INFO[first]';
         $this->replacements['<error>second</error>'] = 'ERROR[second]';
 
-        $this->output->shouldReceive('write')
-                     ->with(["INFO[first]", "ERROR[second]"], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(["INFO[first]", "ERROR[second]"]);
         $this->console->reWrite(['<info>first</info>', '<error>second</error>']);
 
         $this->replacements['<info>first</info> thing'] = 'INFO[first] thing';
@@ -202,8 +202,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[1A\r\e[10C\e[K thing]\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['<info>first thing</info>', '<error>second</error>']);
-
-        $this->assertTrue(true);
     }
 
     public function testUpdateWithNewLine()
@@ -221,8 +219,6 @@ class DiffConsoleOutputTest extends TestCase
                      ->with("\e[?25l\e[2A\r\e[5C\e[K thing\n\r\e[?25h", true, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['first thing', 'second'], true);
-
-        $this->assertTrue(true);
     }
 
     public function testBlankLines()
@@ -231,17 +227,13 @@ class DiffConsoleOutputTest extends TestCase
         $this->output->shouldReceive('getVerbosity')
                      ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
-        $this->output->shouldReceive('write')
-                     ->with(['first', 'second', 'third', 'fourth'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['first', 'second', 'third', 'fourth']);
         $this->console->reWrite(['first', 'second', 'third', 'fourth']);
 
         $this->output->shouldReceive('write')
                      ->with("\e[?25l\e[3A\r\e[Knew\n\r\n\r\n\r\e[?25h", false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['new', 'second', 'third', 'fourth']);
-
-        $this->assertTrue(true);
     }
 
     public function testWrappedLines()
@@ -255,9 +247,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->once()
                       ->andReturn(['1234567890', '12345']);
 
-        $this->output->shouldReceive('write')
-                     ->with(['1234567890', '12345'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['1234567890', '12345']);
         $this->console->reWrite(['123456789012345']);
 
         $this->wrapper->shouldReceive('wrap')
@@ -281,9 +271,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->with(['1234567890', '1234567890'])
                       ->once()
                       ->andReturn(['1234567890', '1234567890']);
-        $this->output->shouldReceive('write')
-                     ->with(['1234567890', '1234567890'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['1234567890', '1234567890']);
         $this->console->reWrite(['1234567890', '1234567890']);
 
         $this->wrapper->shouldReceive('wrap')
@@ -291,7 +279,11 @@ class DiffConsoleOutputTest extends TestCase
                       ->once()
                       ->andReturn(['1234567890', '12345', '1234567890', '12345']);
         $this->output->shouldReceive('write')
-                     ->with("\e[?25l\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345\e[?25h", false, static::DEFAULT_OPTIONS)
+                     ->with(
+                         "\e[?25l\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345\e[?25h",
+                         false,
+                         static::DEFAULT_OPTIONS
+                     )
                      ->once();
         $this->console->reWrite(['123456789012345', '123456789012345']);
     }
@@ -310,7 +302,7 @@ class DiffConsoleOutputTest extends TestCase
                       ->andReturn(['1234567890']);
 
         $this->output->shouldReceive('write')
-                     ->with(['1234567890'], false, static::DEFAULT_OPTIONS)
+                     ->with('1234567890', false, static::DEFAULT_OPTIONS)
                      ->once();
         $this->console->reWrite(['123456789012345']);
 
@@ -331,9 +323,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->output->shouldReceive('getVerbosity')
                      ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
-        $this->output->shouldReceive('write')
-                     ->with(['first', 'second', 'third', 'fourth', 'fifth'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['first', 'second', 'third', 'fourth', 'fifth']);
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth']);
 
         $this->output->shouldReceive('write')
@@ -373,9 +363,7 @@ class DiffConsoleOutputTest extends TestCase
         $this->output->shouldReceive('getVerbosity')
                      ->andReturn(OutputInterface::VERBOSITY_NORMAL);
 
-        $this->output->shouldReceive('write')
-                     ->with(['first', 'second'], false, static::DEFAULT_OPTIONS)
-                     ->once();
+        $this->expectWrite(['first', 'second']);
         $this->console->reWrite("first\nsecond");
     }
 }

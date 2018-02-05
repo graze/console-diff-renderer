@@ -28,7 +28,7 @@ ensure-composer-file: # Update the composer file
 ifeq (${OS},Darwin)
 	sed -E -e 's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i '' composer.json
 else
-	sed -r -e 's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i '' composer.json
+	sed -r -e's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i'' composer.json
 endif
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.

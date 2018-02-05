@@ -23,7 +23,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - "sed -E -e 's/\"php\": \"[0-9\.]+\"/\"php\": \"$(phpenv global)\"/' -i '' composer.json"
+  - PHP_VER=$(phpenv global) make ensure-composer-file
   - travis_retry composer update --no-interaction --prefer-dist $PREFER_LOWEST
 
 script:

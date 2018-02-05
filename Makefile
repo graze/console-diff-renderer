@@ -1,12 +1,12 @@
 SHELL = /bin/sh
 
-DOCKER ?= $(shell which docker)
+DOCKER = $(shell which docker)
 PHP_VER := 7.2
 IMAGE := graze/php-alpine:${PHP_VER}-test
 VOLUME := /srv
 DOCKER_RUN_BASE := ${DOCKER} run --rm -t -v $$(pwd):${VOLUME} -w ${VOLUME}
 DOCKER_RUN := ${DOCKER_RUN_BASE} ${IMAGE}
-OS := $(shell uname)
+OS = $(shell uname)
 
 PREFER_LOWEST ?=
 

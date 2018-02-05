@@ -23,7 +23,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - PHP_VER=$(phpenv global) make ensure-composer-file
+  - make ensure-composer-file PHP_VER=$(phpenv global)
   - travis_retry composer update --no-interaction --prefer-dist $PREFER_LOWEST
 
 script:

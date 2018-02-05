@@ -24,7 +24,11 @@ build-update: ## Update the dependencies
 	make 'composer-update --optimize-autoloader ${PREFER_LOWEST}'
 
 ensure-composer-file: # Update the composer file
+ifeq (${OSTYPE},linux-gnu)
+	sed -r -e 's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i '' composer.json
+else
 	sed -E -e 's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i '' composer.json
+endif
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
 composer-%: ensure-composer-file

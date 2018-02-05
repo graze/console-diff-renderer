@@ -12,7 +12,6 @@ php:
   - 7.0
   - 7.1
   - 7.2
-  - hhvm
   - nightly
 
 env:
@@ -24,7 +23,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - sed -E -e 's/"php": "[0-9\.]+"/"php": "$(phpenv global)"/' -i '' composer.json
+  - "sed -E -e 's/\"php\": \"[0-9\.]+\"/\"php\": \"$(phpenv global)\"/' -i '' composer.json"
   - travis_retry composer update --no-interaction --prefer-dist $PREFER_LOWEST
 
 script:

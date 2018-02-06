@@ -279,11 +279,11 @@ class DiffConsoleOutputTest extends TestCase
                       ->once()
                       ->andReturn(['1234567890', '12345', '1234567890', '12345']);
         $this->output->shouldReceive('write')
-                     ->with(
-                         "\e[?25l\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345\e[?25h",
-                         false,
-                         static::DEFAULT_OPTIONS
-                     )
+                    ->with(
+                        "\e[?25l\e[1A\r\n\r\e[5C\e[K\n\r\e[K1234567890\n\r\e[K12345\e[?25h",
+                        false,
+                        static::DEFAULT_OPTIONS
+                    )
                      ->once();
         $this->console->reWrite(['123456789012345', '123456789012345']);
     }
@@ -327,11 +327,11 @@ class DiffConsoleOutputTest extends TestCase
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth']);
 
         $this->output->shouldReceive('write')
-                     ->with(
-                         "\e[?25l\e[4A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth\e[?25h",
-                         false,
-                         static::DEFAULT_OPTIONS
-                     )
+                    ->with(
+                        "\e[?25l\e[4A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth\e[?25h",
+                        false,
+                        static::DEFAULT_OPTIONS
+                    )
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth']);
     }
@@ -348,11 +348,11 @@ class DiffConsoleOutputTest extends TestCase
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth'], true);
 
         $this->output->shouldReceive('write')
-                     ->with(
-                         "\e[?25l\e[5A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth\e[?25h",
-                         true,
-                         static::DEFAULT_OPTIONS
-                     )
+                    ->with(
+                        "\e[?25l\e[5A\r\e[Ksecond\n\r\e[Kthird\n\r\e[Kfourth\n\r\e[1C\e[Kifth\n\r\e[Ksixth\e[?25h",
+                        true,
+                        static::DEFAULT_OPTIONS
+                    )
                      ->once();
         $this->console->reWrite(['first', 'second', 'third', 'fourth', 'fifth', 'sixth'], true);
     }

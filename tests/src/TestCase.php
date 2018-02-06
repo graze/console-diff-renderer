@@ -14,6 +14,10 @@
 
 namespace Graze\DiffRenderer\Test;
 
-class TestCase extends \PHPUnit_Framework_TestCase
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use PHPUnit\Framework\TestCase as PHPUnitTestCase;
+
+class TestCase extends PHPUnitTestCase
 {
+    use MockeryPHPUnitIntegration;
 }

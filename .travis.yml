@@ -8,11 +8,10 @@ cache:
     - $HOME/.composer/cache/files
 
 php:
-  - 5.5
   - 5.6
   - 7.0
   - 7.1
-  - hhvm
+  - 7.2
   - nightly
 
 env:
@@ -24,6 +23,7 @@ matrix:
     - php: nightly
 
 before_script:
+  - make ensure-composer-file PHP_VER=$(php -r "echo PHP_VERSION;")
   - travis_retry composer update --no-interaction --prefer-dist $PREFER_LOWEST
 
 script:

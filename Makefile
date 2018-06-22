@@ -19,20 +19,17 @@ PREFER_LOWEST ?=
 # Building
 
 build: ## Install the dependencies
-	make 'composer-install --optimize-autoloader'
+build: ensure-composer-file
+	make 'composer-install --optimize-autoloader --prefer-dist ${PREFER_LOWEST}'
 
 build-update: ## Update the dependencies
-	make 'composer-update --optimize-autoloader ${PREFER_LOWEST}'
+build-update: ensure-composer-file
+	make 'composer-update --optimize-autoloader --prefer-dist ${PREFER_LOWEST}'
 
 ensure-composer-file: # Update the composer file
-ifeq (${OS},Darwin)
-	sed -E -e 's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i '' composer.json
-else
-	sed -r -e's/"php": "[0-9\.]+"/"php": "${PHP_VER}"/' -i'' composer.json
-endif
+	make 'composer-config platform.php ${PHP_VER}'
 
 composer-%: ## Run a composer command, `make "composer-<command> [...]"`.
-composer-%: ensure-composer-file
 	${DOCKER} run -t --rm \
         -v $$(pwd):/app:delegated \
         -v ~/.composer:/tmp:delegated \

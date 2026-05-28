@@ -21,7 +21,7 @@ use Mockery;
 
 class WrapperTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         mb_internal_encoding("UTF-8");
     }

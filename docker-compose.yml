@@ -1,8 +1,6 @@
-version: '2'
-
 services:
   test:
-    image: graze/php-alpine:test
+    image: graze/php-alpine:7.4-test
     volumes:
       - .:/srv
     working_dir: /srv

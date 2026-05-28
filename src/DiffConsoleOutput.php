@@ -49,8 +49,8 @@ class DiffConsoleOutput implements OutputInterface
      */
     public function __construct(
         OutputInterface $output,
-        TerminalInterface $terminal = null,
-        Wrapper $wrapper = null
+        ?TerminalInterface $terminal = null,
+        ?Wrapper $wrapper = null
     ) {
         $this->output = $output;
         $this->terminal = $terminal ?: new Terminal();

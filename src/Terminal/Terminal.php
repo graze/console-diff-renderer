@@ -26,7 +26,7 @@ class Terminal implements TerminalInterface
      * @param CursorInterface|null $cursor
      * @param DimensionsInterface  $dimensions
      */
-    public function __construct(CursorInterface $cursor = null, DimensionsInterface $dimensions = null)
+    public function __construct(?CursorInterface $cursor = null, ?DimensionsInterface $dimensions = null)
     {
         $this->cursor = $cursor ?: new ANSI();
         $this->dimensions = $dimensions ?: new TerminalDimensions();

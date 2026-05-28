@@ -13,8 +13,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4']
-        dependencies: [highest, lowest]
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3', '8.4', '8.5']
+        dependencies: [highest]
+        include:
+          - php: '7.4'
+            dependencies: lowest
 
     steps:
       - uses: actions/checkout@v6
@@ -24,6 +27,9 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           tools: composer:v2
+
+      - name: Align composer platform.php with matrix PHP version
+        run: composer config platform.php ${{ matrix.php }}
 
       - name: Install dependencies
         uses: ramsey/composer-install@v4

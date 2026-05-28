@@ -41,7 +41,7 @@ class DiffConsoleOutputTest extends TestCase
     /** @var string[] */
     private $replacements;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->formatter = Mockery::mock(OutputFormatterInterface::class);
         $auto = '';

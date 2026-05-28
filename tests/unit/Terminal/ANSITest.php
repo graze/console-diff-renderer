@@ -22,7 +22,7 @@ class ANSITest extends TestCase
     /** @var ANSI */
     private $cursor;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

@@ -18,7 +18,7 @@ class DiffConsoleOutputPassThroughTest extends TestCase
     /** @var mixed */
     private $terminal;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

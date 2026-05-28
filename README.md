@@ -2,14 +2,10 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/graze/console-diff-renderer.svg?style=flat-square)](https://packagist.org/packages/graze/console-diff-renderer)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Build Status](https://img.shields.io/travis/graze/console-diff-renderer/master.svg?style=flat-square)](https://travis-ci.org/graze/console-diff-renderer)
-[![Coverage Status](https://img.shields.io/scrutinizer/coverage/g/graze/console-diff-renderer.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/console-diff-renderer/code-structure)
-[![Quality Score](https://img.shields.io/scrutinizer/g/graze/console-diff-renderer.svg?style=flat-square)](https://scrutinizer-ci.com/g/graze/console-diff-renderer)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/graze/console-diff-renderer/ci.yml?branch=master&style=flat-square)](https://github.com/graze/console-diff-renderer/actions/workflows/ci.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/graze/console-diff-renderer.svg?style=flat-square)](https://packagist.org/packages/graze/console-diff-renderer)
 
 Only render things that have changed to the console.
-
-[![asciicast](https://asciinema.org/a/9233umuuyo8gi0gifmnudjz26.png)](https://asciinema.org/a/9233umuuyo8gi0gifmnudjz26)
 
 ## Usage
 

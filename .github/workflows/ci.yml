@@ -28,6 +28,9 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:v2
 
+      - name: Align composer platform.php with matrix PHP version
+        run: composer config platform.php ${{ matrix.php }}
+
       - name: Install dependencies
         uses: ramsey/composer-install@v4
         with:

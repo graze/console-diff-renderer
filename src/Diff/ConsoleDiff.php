@@ -28,7 +28,7 @@ class ConsoleDiff extends FirstDiff
      *
      * @param CursorInterface|null $cursor The cursor used to move around the screen
      */
-    public function __construct(CursorInterface $cursor = null)
+    public function __construct(?CursorInterface $cursor = null)
     {
         $this->cursor = $cursor ?: new ANSI();
     }
